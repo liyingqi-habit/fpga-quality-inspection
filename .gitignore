@@ -1,0 +1,13 @@
+# Only identified local state/cache; never ignore complete PDS/IP/input trees.
+__pycache__/
+*.pyc
+/.venv/
+/.local/
+/evidence/local/
+/private_inputs/
+/codex_handoff_v4/
+.env
+.env.*
+*.pem
+*.key
+# No blanket build/, sim/, pnr/, IP, .idf, .fdc, .hex or .mem exclusion.

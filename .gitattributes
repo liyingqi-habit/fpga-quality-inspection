@@ -1,0 +1,8 @@
+# No repository-wide text normalization: vendor/binary formats stay untouched.
+README.md text eol=lf
+AGENTS.md text eol=lf
+CONTRIBUTING.md text eol=lf
+SECURITY.md text eol=lf
+tools/*.py text eol=lf
+tests/*.py text eol=lf
+.github/workflows/*.yml text eol=lf
