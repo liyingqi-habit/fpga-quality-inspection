@@ -10,6 +10,8 @@
 
 ## 每天从这里开始
 
+[任务 Issues](https://github.com/liyingqi-habit/fpga-quality-inspection/issues) · [任务看板](https://github.com/users/liyingqi-habit/projects/1) · [待审 PR](https://github.com/liyingqi-habit/fpga-quality-inspection/pulls) · [证据](evidence/README.md)
+
 - [可领取任务和八张操作卡](docs/tasks/README.md)：动态负责人和交接以远端 Issue 为准。
 - [怎么运行、第一次上手](docs/START_HERE.md)：三个轻量命令，不等于硬件验证。
 - [怎么提交和审核](CONTRIBUTING.md)：任务分支 → PR（审核申请）→ 两名非作者审核 → 所有者手动合并。

@@ -1,6 +1,6 @@
 # T00 实际检查与远端状态（阶段记录）
 
-日期：2026-09-26。执行者：Codex 本地工具，按所有者授权；不是人工硬件验收。
+开始日期：2026-09-26；远端落地续至2026-09-27（Asia/Shanghai）。执行者：Codex 本地工具，按所有者授权；不是人工硬件验收。
 
 ## 本地实测
 
@@ -24,8 +24,18 @@
 - [唯一合并人规则24044107](https://github.com/liyingqi-habit/fpga-quality-inspection/rules/24044107)：active，仅针对main更新；仅用户316439266可在PR路径通过这层限制，不豁免独立质量规则。
 - 有效规则API已核验main有上述规则，任务分支规则数0。唯一管理员目前是所有者。管理员仍可能修改规则，不能承诺管理权限永远无法变更政策。
 
-## 尚未完成（不得当成已生效）
+## 远端后续核验
 
-初始化分支第一次上传因缺workflow OAuth权限被拒绝，尚无PR及远端CI结果；repo-baseline尚未设required。Project等待project授权完成。另两位用户名未知，未邀请、未接受、无两份审核。没有合并、发布最终版或操作硬件。
+用户明确授权并亲自完成project/workflow追加认证后，初始化分支上传成功。[PR #24](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/24)已创建，未合并。
 
-下一步：补足明确授权，推任务分支、建PR并运行CI，成功后增加required检查；创建并关联Project、记录最终核验。技术工作从#16的T01-01开始。
+首次真实CI：[运行36253561851](https://github.com/liyingqi-habit/fpga-quality-inspection/actions/runs/36253561851)，受测SHA 1b02b00cdb64d4e310fb6a6c1aec8b9f20a47ef8；check-run 108435994617 名称repo-baseline，completed/success，GitHub Actions app_id 15368。成功后才在质量规则24044105添加required_status_checks：context=repo-baseline、integration_id=15368、strict=true。保留两人审核等原规则，bypass仍为空。
+
+[项目看板](https://github.com/users/liyingqi-habit/projects/1)已创建并关联本仓库，包含23个Issue和本PR，使用等条件/可领取/正在做/待验收/卡住/已完成。可领取仅指卡中允许的准备或设计范围，物理条件仍须确认。T02-01缺原工程保持卡住，PR待验收，未把硬件任务设为已完成。
+
+上述是一次真实核验快照，后续提交需要新的CI。请在PR检查区确认最新head对应成功记录，而非只看本历史运行。
+
+## 仍需人工完成
+
+另外两位用户名未知，未邀请、未接受、无两份审核。提供用户名后仅邀请开发权限；两名非作者审核后由所有者手动合并。管理员能修改规则的管理边界依旧存在。没有合并、发布最终版或操作硬件。
+
+下一项具体技术工作：[T01-01 #16](https://github.com/liyingqi-habit/fpga-quality-inspection/issues/16)，先盘点实物身份和工具版本，准确工程仍MISSING。
