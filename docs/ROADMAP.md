@@ -23,4 +23,3 @@
 |[T15 最终证据与提交](tasks/T15.md)|固定版本交付索引、复现/演示脚本|T14|G7|
 
 [首批八张任务卡](tasks/README.md) · [G0—G7 验收关](acceptance/GATES.md)。未来方向列于各父任务，参数/命令待输入，不批量开空 Issue。
-
