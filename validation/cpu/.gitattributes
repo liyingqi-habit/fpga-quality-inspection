@@ -1,0 +1,2 @@
+# Keep shell scripts, manifests and test sources usable in WSL/Linux checkouts.
+* text eol=lf
