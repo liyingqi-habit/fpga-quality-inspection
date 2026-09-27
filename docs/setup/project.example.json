@@ -1,0 +1,20 @@
+{
+  "example": true,
+  "id": "EXAMPLE_NOT_RUNNABLE",
+  "entry": "REPLACE_WITH_REAL_PDS_PATH",
+  "top": "MISSING",
+  "device": "MISSING",
+  "tool": {
+    "name": "PDS",
+    "version": "MISSING"
+  },
+  "sources": [],
+  "constraints": [],
+  "ip": [],
+  "initialization": [],
+  "firmware": [],
+  "models": [],
+  "external_dependencies": [],
+  "outputs": [],
+  "status": "MISSING"
+}

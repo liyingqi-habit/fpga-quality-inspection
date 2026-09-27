@@ -1,0 +1,22 @@
+# 本项目工作纪律
+- 先读 README、对应 docs/tasks 任务、引用接口与证据，再核实远端负责人、分支、改动。
+- 只在任务分支工作；main 的一次最小 README 种子已完成，此后禁止直接提交/推送 main。
+- PR 是审核申请；两名非作者审核，liyingqi-habit 手动合并。不得代发 Approve 或自动合并。
+- 三人可认领任意模块；同一分支同时只有一名主要编辑者，改公共工程/IP/约束先协调。
+- 保留用户改动；不 reset --hard、git clean、自动 stash、强推、自动改其他仓库。
+- 本轮仅协作基础；不凭模板生成假 .pds、IP、约束、引脚、地址或下载文件。
+- 工程入口见 docs/setup/PROJECTS.md；MISSING 不等于支持构建。
+- 决策状态与测试状态分开。推荐不是批准；文件存在不是通过；仿真不是实物。
+- 检查工具只检查仓库结构，不证明 PDS/CPU/AI/电机通过。
+- 公共接口先写草案、评审后升版；不得让模块猜不同的 DMA 完成或复位语义。
+- 原资料、private_inputs、许可证、凭据、个人信息不得公开。只暂存审核过的明确路径。
+- 原生 PDS/IP/非 UTF-8/二进制保留格式，按 PDS_FILE_POLICY；不得粗暴忽略所有生成输入。
+- 无根 LICENSE 是有意等待团队决定；第三方许可逐项核验，不假设能再分发。
+- 物理接线、供电、下载、执行器、急停试验必须人工检查监管，Agent 不自动操作。
+- 不用 PC/硬 ARM/NPU 代跑冒充最终设备内 AI；测试替身必须明显隔离。
+- 正常/边界/异常/复位取消都按任务覆盖；不测的写 NOT_RUN 或 BLOCKED。
+- 公共源码不得包含本机绝对路径；真实本机路径留本地非公开恢复记录。
+- 通用命令（Python 3.10+）：python tools/project.py doctor；python tools/project.py check；python -m unittest discover -s tests -v。
+- 没有 python 命令时按 docs/setup/ENVIRONMENT.md 设置本会话解释器，不改系统全局配置。
+- 证据模板：python tools/project.py evidence --task T01-01 --test identity --input README.md --output evidence/local/identity.json。
+- 每次结束说明实际修改、实际检查、未测、风险、后续集成任务；四项交接留 Issue。

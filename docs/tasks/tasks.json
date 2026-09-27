@@ -1,0 +1,353 @@
+{
+  "schema_version": 1,
+  "tasks": [
+    {
+      "id": "T01",
+      "type": "parent",
+      "title": "找清实物和资料",
+      "parent": null,
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "所有关键身份有照片/原文交叉证据；矛盾保持待确认",
+      "integration": "T02",
+      "path": "docs/tasks/T01.md"
+    },
+    {
+      "id": "T02",
+      "type": "parent",
+      "title": "跑通匹配板卡的基础工程",
+      "parent": null,
+      "depends_on": [
+        "T01"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "另一成员从新目录取得合法依赖并重现声明现象",
+      "integration": "T03",
+      "path": "docs/tasks/T02.md"
+    },
+    {
+      "id": "T03",
+      "type": "parent",
+      "title": "图像和存储链",
+      "parent": null,
+      "depends_on": [
+        "T02"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "写响应完成才发布完整帧；持有帧不被覆盖",
+      "integration": "T10",
+      "path": "docs/tasks/T03.md"
+    },
+    {
+      "id": "T04",
+      "type": "parent",
+      "title": "照清真实工件",
+      "parent": null,
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "真实方向/缺陷证据可见；不可见项明确拒判范围",
+      "integration": "T05",
+      "path": "docs/tasks/T04.md"
+    },
+    {
+      "id": "T05",
+      "type": "parent",
+      "title": "数据和装配规则",
+      "parent": null,
+      "depends_on": [
+        "T04"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "同一实物连续帧不跨训练/盲测；阈值不看盲测调",
+      "integration": "T07",
+      "path": "docs/tasks/T05.md"
+    },
+    {
+      "id": "T06",
+      "type": "parent",
+      "title": "CPU和正确访存",
+      "parent": null,
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "访存、异常和旧DMA隔离符合共同合同；成绩另实测",
+      "integration": "T10",
+      "path": "docs/tasks/T06.md"
+    },
+    {
+      "id": "T07",
+      "type": "parent",
+      "title": "模型与整数参考",
+      "parent": null,
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "整数逐位线和真实识别效果线分开；未知图拒绝",
+      "integration": "T08",
+      "path": "docs/tasks/T07.md"
+    },
+    {
+      "id": "T08",
+      "type": "parent",
+      "title": "卷积后端先导",
+      "parent": null,
+      "depends_on": [
+        "T07"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "支持参数范围逐位对照；PDS映射另需G0",
+      "integration": "T09",
+      "path": "docs/tasks/T08.md"
+    },
+    {
+      "id": "T09",
+      "type": "parent",
+      "title": "补齐张量处理",
+      "parent": null,
+      "depends_on": [
+        "T07",
+        "T08"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "热路径不偷偷回CPU；全负数池化等反例通过",
+      "integration": "T10",
+      "path": "docs/tasks/T09.md"
+    },
+    {
+      "id": "T10",
+      "type": "parent",
+      "title": "完整AI和板级预算",
+      "parent": null,
+      "depends_on": [
+        "T03",
+        "T06",
+        "T09"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "设备内整图可追溯；无外部PC代推理；实际效果还需G1",
+      "integration": "T13",
+      "path": "docs/tasks/T10.md"
+    },
+    {
+      "id": "T11",
+      "type": "parent",
+      "title": "身份、启动、显示与记录",
+      "parent": null,
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "旧任务不可控制新件；未完成动作不自动重放",
+      "integration": "T13",
+      "path": "docs/tasks/T11.md"
+    },
+    {
+      "id": "T12",
+      "type": "parent",
+      "title": "机构与电气闭环",
+      "parent": null,
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "命令、位置、出口分开确认；CPU失效仍能安全禁止",
+      "integration": "T13",
+      "path": "docs/tasks/T12.md"
+    },
+    {
+      "id": "T13",
+      "type": "parent",
+      "title": "真实整机联动",
+      "parent": null,
+      "depends_on": [
+        "T10",
+        "T11",
+        "T12"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "托盘及传送独立验收；真实AI与测试替身不混淆",
+      "integration": "T14",
+      "path": "docs/tasks/T13.md"
+    },
+    {
+      "id": "T14",
+      "type": "parent",
+      "title": "盲测与比较",
+      "parent": null,
+      "depends_on": [
+        "T05",
+        "T13"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "不重复调盲测；固定灯/全部两次/选择性复检公平比较",
+      "integration": "T15",
+      "path": "docs/tasks/T14.md"
+    },
+    {
+      "id": "T15",
+      "type": "parent",
+      "title": "最终证据与提交",
+      "parent": null,
+      "depends_on": [
+        "T14"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "受测源码、模型、约束、下载文件一致；未达G7不称最终版",
+      "integration": "G7",
+      "path": "docs/tasks/T15.md"
+    },
+    {
+      "id": "T01-01",
+      "type": "task",
+      "title": "盘点板卡、工具和缺口",
+      "parent": "T01",
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "正常：另一人能按来源定位每一身份字段。；边界：丝印模糊、同名不同修订保持未知。；异常：手册容量与颗粒组织冲突登记为阻塞。；复位/取消：本卡不做通电复位，N/A；所有物理动作留给批准测试。",
+      "integration": "T02",
+      "path": "docs/tasks/T01-01.md"
+    },
+    {
+      "id": "T02-01",
+      "type": "task",
+      "title": "取得并登记真正匹配的基础工程",
+      "parent": "T02",
+      "depends_on": [
+        "T01-01"
+      ],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "正常：入口和全部登记输入存在且属于这版板卡。；边界：中文/空格路径是否被真实PDS支持另测。；异常：缺IP/初始化文件/外部许可时不变成READY。；复位/取消：本卡不下载，无硬件复位；撤销登记用新PR。",
+      "integration": "T03",
+      "path": "docs/tasks/T02-01.md"
+    },
+    {
+      "id": "T01-02",
+      "type": "task",
+      "title": "核对赛题、CPU复用和公开许可问题",
+      "parent": "T01",
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S4"
+      ],
+      "acceptance": "正常：每项规则可回查原文及本项目证据去向。；边界：推荐技术不升级为强制竞赛条件。；异常：另一题目指标或无出处聊天不作为规则。；复位/取消：新通知替代旧规则须保留历史与影响回归。",
+      "integration": "T15",
+      "path": "docs/tasks/T01-02.md"
+    },
+    {
+      "id": "T04-01",
+      "type": "task",
+      "title": "准备真实样件和固定照明观察",
+      "parent": "T04",
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "正常：关键方向/装配特征可见。；边界：最小特征、边缘位置、反光。；异常：模糊/遮挡/未知件不自动合格。；取消/换件：样件编号和图像对应重新确认。",
+      "integration": "T05",
+      "path": "docs/tasks/T04-01.md"
+    },
+    {
+      "id": "T06-01",
+      "type": "task",
+      "title": "冻结CPU写完成和共享内存合同草案",
+      "parent": "T06",
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "正常：确认实际写完成后消费者才取得数据。；边界：长背压、跨边界/未对齐支持策略明示。；异常：总线错误与精确异常不能静默退休。；复位/取消：旧DMA仍在途时缓冲不能重新分配。",
+      "integration": "T10",
+      "path": "docs/tasks/T06-01.md"
+    },
+    {
+      "id": "T07-01",
+      "type": "task",
+      "title": "冻结有限整数图合同草案",
+      "parent": "T07",
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "正常：同一输入各消费者得到同一规定输出。；边界：负半值舍入、饱和、极值累加、尾块。；异常：错scale、未知shape/ABI、损坏包拒绝。；复位/取消：加载未完成或版本不符不得启动推理。",
+      "integration": "T08",
+      "path": "docs/tasks/T07-01.md"
+    },
+    {
+      "id": "T11-01",
+      "type": "task",
+      "title": "定义工件到动作的身份和取消合同",
+      "parent": "T11",
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "正常：动作只引用当前冻结判定。；边界：重复事件、序号边界、记录容量不足。；异常：出口卡高/无反馈不算确认。；复位/取消：旧DMA不污染新缓冲；重启不重放动作。",
+      "integration": "T13",
+      "path": "docs/tasks/T11-01.md"
+    },
+    {
+      "id": "T12-01",
+      "type": "task",
+      "title": "编制机构电气与安全禁止方案",
+      "parent": "T12",
+      "depends_on": [],
+      "source": [
+        "V4",
+        "S1"
+      ],
+      "acceptance": "正常：每个动作有停止和反馈方案。；边界：启动/堵转电流和惯性由资料及后续人工实测确定。；异常：CPU死机/复位、断反馈、门禁/急停有独立禁止。；恢复：故障解除后需人工确认，旧命令不续跑。",
+      "integration": "T13",
+      "path": "docs/tasks/T12-01.md"
+    }
+  ]
+}

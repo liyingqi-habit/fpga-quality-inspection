@@ -1,0 +1,29 @@
+Run context: Windows PowerShell; Python 3.12.14; Git 2.53.0.windows.3
+Source: 8fb2e0eb7f924982fca63283172f4fe4b0a3703f
+Commands invoked via verified interpreter (private absolute path omitted).
+
+python -X utf8 tools/project.py check
+仓库结构检查通过；不代表PDS/硬件通过。
+
+python -X utf8 -m unittest discover -s tests -v
+test_available_python (test_project.Checks.test_available_python) ... ok
+test_cycle (test_project.Checks.test_cycle) ... ok
+test_empty_pass_rejected (test_project.Checks.test_empty_pass_rejected) ... ok
+test_evidence_real_hash_and_no_overwrite (test_project.Checks.test_evidence_real_hash_and_no_overwrite) ... ok
+test_indirect_cycle (test_project.Checks.test_indirect_cycle) ... ok
+test_missing_field (test_project.Checks.test_missing_field) ... ok
+test_missing_path (test_project.Checks.test_missing_path) ... ok
+test_missing_project_honest (test_project.Checks.test_missing_project_honest) ... ok
+test_missing_tool (test_project.Checks.test_missing_tool) ... ok
+test_path_escape (test_project.Checks.test_path_escape) ... ok
+test_project_bad_entry (test_project.Checks.test_project_bad_entry) ... ok
+test_registered_empty (test_project.Checks.test_registered_empty) ... ok
+test_template_cannot_pass (test_project.Checks.test_template_cannot_pass) ... ok
+test_unknown_dependency (test_project.Checks.test_unknown_dependency) ... ok
+test_valid_tasks (test_project.Checks.test_valid_tasks) ... ok
+
+Ran 15 tests in 0.844s
+OK
+
+git diff main --check
+(no errors; exit 0)
