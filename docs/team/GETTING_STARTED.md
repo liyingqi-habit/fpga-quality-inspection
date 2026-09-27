@@ -44,6 +44,8 @@ bash validation/write_response/run.sh
 
 ## 4. 原CPU回归和PDS边界
 
+新增[真实LSU实验入口](../../validation/real_lsu/README.md)：需要固定上游源码、Java/sbt生成环境；不使用原CPU_INPUT_ROOT四文件作为新配置。它是另一套受测配置，不把旧CPU回归结果自动继承过来。生成/运行/故障对照分别按该目录说明执行。
+
 原CPU回归另需RISC-V裸机GCC/objcopy/objdump和合法外部输入。先向所有者确认取得匹配版本的方法；原资料包不得直接上传公开仓库或随意转发。
 
 `CPU_INPUT_ROOT`目录必须包含以下四项，且通过[固定哈希](../../validation/cpu/inputs.sha256)：

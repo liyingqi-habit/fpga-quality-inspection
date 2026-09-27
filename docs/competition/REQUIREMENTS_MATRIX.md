@@ -14,7 +14,7 @@
 - INFRA_PASS：验证设施自身通过，不能改记CPU或整机PASS。
 - DRAFT：技术决策待评审；与测试状态分开记录。
 
-以下证据索引： [E1 CPU先导实跑摘要](../../evidence/cpu-validation-20260927.md)、[E2 写响应设施实跑](../../evidence/write-response-20260927.md)、[A1 写完成源码审计](../interfaces/CPU_WR_01_AUDIT.md)、[D1 访存合同草案](../interfaces/CPU_BUS_CONTRACT_DRAFT.md)。E1是已有本地日志的公开摘要，非本轮全部重跑。
+以下证据索引： [E1 CPU先导实跑摘要](../../evidence/cpu-validation-20260927.md)、[E2 写响应设施实跑](../../evidence/write-response-20260927.md)、[E3 真实LSU实验](../../evidence/real-lsu-20260927.md)、[A1 写完成源码审计](../interfaces/CPU_WR_01_AUDIT.md)、[D1 访存合同草案](../interfaces/CPU_BUS_CONTRACT_DRAFT.md)。E1是已有本地日志的公开摘要，非本轮全部重跑。
 
 ## 要求、代码与缺口
 
@@ -26,7 +26,7 @@
 |R04 实现方式/平台|Verilog/SystemVerilog；推荐开发板或紫光同创FPGA平台|SV测试代码、PDS综合摘要E1：PARTIAL；盘古200K MINI完整硬件身份及匹配工程仍待确认|T01/T02：确认板卡/核心板版本、合法工程及约束；生成RTL参赛方式另行正式澄清|
 |R05 高阶|两路组相联指令Cache和数据Cache，优化突发访问|当前公开测试包无对应完整实现证据：NOT_RUN|T06：分别验证I/D Cache结构、命中/缺失/替换、写策略、突发及错误复位；不得把无Cache先导当完成|
 |R06 高阶|动态分支预测（如BTB）|无专门预测效果、恢复与结构验收：NOT_RUN|T06：固定配置，测预测命中/失误恢复和副作用；BTB是原文举例，不将例子擅自升级为唯一实现|
-|R07 高阶|完整RISC-V异常/中断机制|[异常程序](../../validation/cpu/sw/cpu_traps.S)、E1：PARTIAL；精确非法写异常缺口见A1；中断完整验收NOT_RUN|T06：真实写响应错误归属、CSR/返回、异常优先级与中断完整回归；E2仅INFRA_PASS|
+|R07 高阶|完整RISC-V异常/中断机制|[异常程序](../../validation/cpu/sw/cpu_traps.S)、E1：PARTIAL；原工程写异常缺口见A1，E3补充独立无Cache配置的写错误/复位验证；中断完整验收NOT_RUN|T06：将实验接入完整系统后回归CSR/返回、异常优先级及中断；E2仅INFRA_PASS，E3不使整项完成|
 |R08 高阶应用|基于所设计CPU构建边缘AI加速，移植YOLO或轻量模型，结合传感/显示完成应用|传送带质检是团队方案，完整设备内AI未验收：NOT_RUN|T03/T07—T10/T13：真实图像、模型、整数参考与硬件加速一致，CPU调度及整图运行证据；PC代算不得冒充设备执行|
 |R09 测评环境|列明riscv32-unknown-elf-gcc、CoreMark v1.0|先导实跑使用riscv64-unknown-elf-gcc 14.2.0；尚无正式CoreMark结果：PARTIAL/NOT_RUN|T15：核实RV32目标编译参数和产物；与原文工具链名称差异须记录并澄清，不凭工具前缀断言一致|
 |R10 性能测量|CoreMark运行不少于10秒，评估CoreMark/MHz|无合规计时、迭代与校验报告：NOT_RUN|T15：固定CoreMark版本、参数、CPU频率和计时方法，原始日志证明时长至少10秒及结果正确|

@@ -11,5 +11,6 @@
 - [队员上手指南](docs/team/GETTING_STARTED.md)：看代码、评审、修改和运行测试。
 - [CPU 离线测试](validation/cpu/README.md)：需要合法外部输入，不是完整可上板工程。
 - [独立写响应测试](validation/write_response/README.md)：可独立运行，但合成驱动不是CPU。
+- [真实 LSU 写响应实验](validation/real_lsu/README.md)：固定源码生成实验CPU，真实退休/异常/复位检查；不是完整SoC或上板验收。
 
 本分支为 `task/T06-cpu-validation-contract`，对应 [PR #25](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/25)。协作基础在另一个尚待合并的 [PR #24](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/24)，两者不是已集成版本。
