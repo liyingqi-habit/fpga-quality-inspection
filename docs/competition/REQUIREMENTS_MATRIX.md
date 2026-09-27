@@ -20,7 +20,7 @@
 
 ## 要求、代码与缺口
 
-2026-09-27新增 [AXIL/机器模式基线](../../evidence/axil-baseline-20260927.md) 和 [同版本PDS/网表证据](../../evidence/axil-pds-20260927.md)：199 个独立结果、9类同步异常、三类屏蔽/pending中断及对应综合实现。R01/R02/R07/R11仍为PARTIAL：已补基础中断，不再是“完全没测中断”，但优先级/嵌套、完整架构认证、实物/性能仍未验收。完整覆盖与NOT_RUN以 [当前覆盖清单](../../validation/axil/README.md) 为准。
+2026-09-27新增 [AXIL/机器模式基线](../../evidence/axil-baseline-20260927.md) 和 [同版本PDS/网表证据](../../evidence/axil-pds-20260927.md)：199 个独立结果、9类同步异常、三类屏蔽/pending中断及对应综合实现。另补 [同时pending优先级RTL验证](../../evidence/axil-irq-priority-20260927.md)：16种组合、144次中断处理，不属于此前网表固件覆盖。R01/R02/R07/R11仍为PARTIAL：嵌套、完整架构认证、实物/性能仍未验收。完整覆盖与NOT_RUN以 [当前覆盖清单](../../validation/axil/README.md) 为准。
 
 CPU-WR-05补充：[E5 在途复位/混合指令](../../evidence/lsu-extended-20260927.md)、[E6 迁移版PDS](../../evidence/lsu-pds-20260927.md)。E5增加24个本地全局复位窗口、独立参考模型混合指令两轮×三档延迟；E6完成综合/PnR，旧候选约束下27MHz时序通过。R01/R02/R03/R07/R11仍PARTIAL：不把局部RTL验证、异步路径例外、工具估算Fmax当作完整ISA、中断、板级时序或CoreMark验收。
 
@@ -32,7 +32,7 @@ CPU-WR-05补充：[E5 在途复位/混合指令](../../evidence/lsu-extended-202
 |R04 实现方式/平台|Verilog/SystemVerilog；推荐开发板或紫光同创FPGA平台|SV测试代码、PDS综合摘要E1：PARTIAL；盘古200K MINI完整硬件身份及匹配工程仍待确认|T01/T02：确认板卡/核心板版本、合法工程及约束；生成RTL参赛方式另行正式澄清|
 |R05 高阶|两路组相联指令Cache和数据Cache，优化突发访问|当前公开测试包无对应完整实现证据：NOT_RUN|T06：分别验证I/D Cache结构、命中/缺失/替换、写策略、突发及错误复位；不得把无Cache先导当完成|
 |R06 高阶|动态分支预测（如BTB）|无专门预测效果、恢复与结构验收：NOT_RUN|T06：固定配置，测预测命中/失误恢复和副作用；BTB是原文举例，不将例子擅自升级为唯一实现|
-|R07 高阶|完整RISC-V异常/中断机制|PARTIAL；AXIL基线已测机器模式9类同步异常、三类屏蔽/pending中断、CSR与mret，并修复mtval；完整验收仍NOT_RUN|T06：补同时pending优先级、嵌套、CSR边界、真实互连复位/异常交叉及最终系统回归；不把机器模式有限定向测试称为全部特权机制完成|
+|R07 高阶|完整RISC-V异常/中断机制|PARTIAL；已测9类同步异常、三类屏蔽/pending中断及同时pending优先级、CSR与mret，并修复mtval；完整验收仍NOT_RUN|T06：补嵌套、CSR边界、真实互连复位/异常交叉及最终系统回归；不把机器模式有限定向测试称为全部特权机制完成|
 |R08 高阶应用|基于所设计CPU构建边缘AI加速，移植YOLO或轻量模型，结合传感/显示完成应用|传送带质检是团队方案，完整设备内AI未验收：NOT_RUN|T03/T07—T10/T13：真实图像、模型、整数参考与硬件加速一致，CPU调度及整图运行证据；PC代算不得冒充设备执行|
 |R09 测评环境|列明riscv32-unknown-elf-gcc、CoreMark v1.0|先导实跑使用riscv64-unknown-elf-gcc 14.2.0；尚无正式CoreMark结果：PARTIAL/NOT_RUN|T15：核实RV32目标编译参数和产物；与原文工具链名称差异须记录并澄清，不凭工具前缀断言一致|
 |R10 性能测量|CoreMark运行不少于10秒，评估CoreMark/MHz|无合规计时、迭代与校验报告：NOT_RUN|T15：固定CoreMark版本、参数、CPU频率和计时方法，原始日志证明时长至少10秒及结果正确|

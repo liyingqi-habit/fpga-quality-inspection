@@ -21,3 +21,5 @@
 - [真实CPU＋新AXIL在途取消](evidence/axil-cancel-20260927.md)：84个读写/复位窗口，独立目标、36轨迹负向与6个RTL故障对照；专用RTL集成测试，不是上板结果。
 
 本分支为 `task/T06-cpu-validation-contract`，对应 [PR #25](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/25)。协作基础在另一个尚待合并的 [PR #24](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/24)，两者不是已集成版本。
+
+- [同时 pending 中断优先级](evidence/axil-irq-priority-20260927.md)：16种组合、4次启动、144次处理；包含屏蔽后释放、mret 和实际 RTL 优先级反转负向检查。

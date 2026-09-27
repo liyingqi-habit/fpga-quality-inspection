@@ -68,7 +68,13 @@ bash validation/axil/run_soc.sh
 |同步异常|cause 0/1/2/3/4/5/6/7/11，核对 mcause/mepc/mtval，设置恢复 PC 后 mret|
 |中断|software/timer/external 分别设置 pending；mie 和全局 MIE 屏蔽，再启用；检查 cause、mtval=0、trap 时 MIE/MPIE 和返回 MIE|
 
-不是 riscv-arch-test 认证或完整 ISA/特权符合性证明。NOT_RUN：所有寄存器/立即数穷举、simultaneous interrupt 优先级、嵌套中断、全部 CSR WARL/只读错误、计数器溢出、WFI/FENCE.I、真实外设协议、随机长跑、SDF、上板。FENCE 定向顺序测试不证明多主机内存模型；该单槽 SoC 也没有多主机。
+不是 riscv-arch-test 认证或完整 ISA/特权符合性证明。NOT_RUN：所有寄存器/立即数穷举、嵌套中断、全部 CSR WARL/只读错误、计数器溢出、WFI/FENCE.I、真实外设协议、随机长跑、SDF、上板。FENCE 定向顺序测试不证明多主机内存模型；该单槽 SoC 也没有多主机。
+
+## 同时 pending 的中断优先级
+
+设置上述 AXIL_CPU_BUILD、CPU_INPUT_ROOT，执行 `bash validation/axil/run_irq.sh`。真实 CPU 和未修改的 SoC 运行生成固件；四种双/三源组合 × 是否先屏蔽最高来源 × 两种使能顺序，共16种。两档外部输入延迟各启动两次，总计144次中断处理、1840条记录。独立预期检查 MEI > MSI > MTI、只清当前来源、被屏蔽请求保留及 mret 恢复 MIE；14次轨迹突变和一次实际 RTL 优先级反转必须被指定原因拒绝。
+
+原始轨迹、固件/反汇编、audit.json 和哈希留在脚本打印的本地目录。详见 [证据与限制](../../evidence/axil-irq-priority-20260927.md)。这是仲裁前同时处于 pending，不是同一时钟沿产生三种请求；不覆盖嵌套或全部中断竞争。
 
 ## PDS 和综合网表
 
