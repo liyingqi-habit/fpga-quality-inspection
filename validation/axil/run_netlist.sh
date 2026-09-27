@@ -4,7 +4,8 @@ here=$(cd "$(dirname "$0")" && pwd)
 : "${PDS_STAGE:?Actual AXIL PDS stage}"
 : "${PDS_SIM_LIB:?Installed vendor simulation library}"
 net="$PDS_STAGE/prj_tasks/syn_1/synthesize/mini_soc_first_board_syn.vm"
-test "$(sha256sum "$net" | cut -d ' ' -f1)" = ce350750ba9a4c08a3fa48cb80e204d9718172a21f39d2d82454e4544bf0e325
+test "$(sha256sum "$net" | cut -d ' ' -f1)" = 4cf1fb1932d73a55b954a5929049d9adeda5f6bda85402c11273f23d68eae46d
+test "$(sha256sum "$PDS_STAGE/VexAxilCpu.v" | cut -d ' ' -f1)" = d0e23f3c4de105dd2c547f41c4bc5f81dd89b3d7d6dba34db8b3062eea701a25
 test "$(sha256sum "$PDS_STAGE/firmware.hex" | cut -d ' ' -f1)" = 773e5cbb012284d43806645e83d90c6e879e85d6ea70ee806b855775839791b1
 out=$(mktemp -d "${TMPDIR:-/tmp}/axil-netlist.XXXXXXXX")
 echo "OUTPUT=$out"

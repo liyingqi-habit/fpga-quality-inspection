@@ -23,4 +23,4 @@
 本分支为 `task/T06-cpu-validation-contract`，对应 [PR #25](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/25)。协作基础在另一个尚待合并的 [PR #24](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/24)，两者不是已集成版本。
 
 - [同时 pending 中断优先级](evidence/axil-irq-priority-20260927.md)：16种组合、4次启动、144次处理；包含屏蔽后释放、mret 和实际 RTL 优先级反转负向检查。
-- [CSR只读/取值边界：当前FAIL](evidence/axil-csr-boundary-20260927.md)：195用例各两次启动，发现只读写保护、mepc低位、mret后MPP三个问题；验证已落地，CPU尚未修复。
+- [CSR三项修复与回归](evidence/axil-csr-fix-20260927.md)：195用例各两次启动通过，撤销三项修复的实际RTL负向检查均能发现错误；保留原始失败记录。

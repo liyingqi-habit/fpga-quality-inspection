@@ -76,9 +76,9 @@ bash validation/axil/run_soc.sh
 
 原始轨迹、固件/反汇编、audit.json 和哈希留在脚本打印的本地目录。详见 [证据与限制](../../evidence/axil-irq-priority-20260927.md)。这是仲裁前同时处于 pending，不是同一时钟沿产生三种请求；不覆盖嵌套或全部中断竞争。
 
-## CSR 只读保护与合法取值边界（当前 FAIL）
+## CSR 只读保护与合法取值边界
 
-设置相同 AXIL_CPU_BUILD、CPU_INPUT_ROOT 后执行 `bash validation/axil/run_csr.sh`。195个定向用例各跑两次，记录3120条结果；检查器17项负向自测通过。当前固定CPU实测只读写保护、mepc低位及mret后MPP存在问题，脚本返回1；不是已验收功能。详见 [失败证据、复现与修复门槛](../../evidence/axil-csr-boundary-20260927.md)。范围包括只读ID/计数别名、未映射CSR、mscratch、固定misa、mie、mstatus、mepc及Direct-only mtvec。完整CSR边界仍未覆盖，不能删掉上述NOT_RUN的“全部”限定。
+设置相同 AXIL_CPU_BUILD、CPU_INPUT_ROOT 后执行 `bash validation/axil/run_csr.sh`。195个定向用例各跑两次，记录3120条结果；检查器17项负向自测及三种实际RTL修复撤销检查均通过。新生成CPU哈希为 `d0e23f3c4de105dd2c547f41c4bc5f81dd89b3d7d6dba34db8b3062eea701a25`，旧生成目录不能直接复用，需在新目录重跑 generate.sh。详见 [修复证据](../../evidence/axil-csr-fix-20260927.md)；[旧失败快照](../../evidence/axil-csr-boundary-20260927.md)保持不变，可在提交af5912e复现。测试预期没有为修复放宽。范围包括只读ID/计数别名、未映射CSR、mscratch、固定misa、mie、mstatus、mepc及Direct-only mtvec；完整CSR边界仍未覆盖。
 
 ## PDS 和综合网表
 
@@ -88,4 +88,4 @@ bash validation/axil/run_soc.sh
 ./validation/axil/run_pds.ps1 -PdsShell <pds_shell.exe> -AxilCpuBuild <生成目录> -CpuInputRoot <合法输入> -SocRun <run_soc输出> -ReferenceProject <旧候选工程>
 ```
 
-检查报告用 `python3 -B validation/lsu_soc/check_pds.py <PDS输出> --self-test`。网表功能回归设置 PDS_STAGE、PDS_SIM_LIB 后执行 `bash validation/axil/run_netlist.sh`。综合网表探针依赖已核验的特定网表，哈希变化先审计，不自动接受。当前 PDS/网表实际结果见 [同版本离线验收](../../evidence/axil-pds-20260927.md)，不是由脚本存在推定 PASS。
+检查报告用 `python3 -B validation/lsu_soc/check_pds.py <PDS输出> --self-test`。网表功能回归设置 PDS_STAGE、PDS_SIM_LIB 后执行 `bash validation/axil/run_netlist.sh`。综合网表探针依赖已核验的特定网表，哈希变化先审计，不自动接受。新CPU PDS/网表结果见 [CSR修复回归](../../evidence/axil-csr-fix-20260927.md)，[此前离线验收](../../evidence/axil-pds-20260927.md)属于旧CPU，不能混用。

@@ -3,7 +3,7 @@ set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 : "${AXIL_CPU_BUILD:?normal AXIL CPU build}"
 : "${CPU_INPUT_ROOT:?legal UART input root}"
-test "$(sha256sum "$AXIL_CPU_BUILD/rtl/VexAxilCpu.v" | cut -d ' ' -f1)" = 6bc91de7f76e88d7edf056e8d30790c645876bf13e7177e7827c949ff12d141e
+test "$(sha256sum "$AXIL_CPU_BUILD/rtl/VexAxilCpu.v" | cut -d ' ' -f1)" = d0e23f3c4de105dd2c547f41c4bc5f81dd89b3d7d6dba34db8b3062eea701a25
 test "$(sha256sum "$CPU_INPUT_ROOT/rtl/mini_uart.v" | cut -d ' ' -f1)" = 12c0b1b94fb3132e68587c72dfe431407dc12785024a07e81fac584a17f5a68e
 out=$(mktemp -d "${TMPDIR:-/tmp}/axil-irq.XXXXXXXX")
 echo "OUTPUT=$out"

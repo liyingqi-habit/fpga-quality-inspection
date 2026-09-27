@@ -7,7 +7,7 @@ param(
 )
 $ErrorActionPreference='Stop'
 if((Get-Content -LiteralPath (Join-Path $AxilCpuBuild 'mode.txt') -Raw).Trim() -ne 'normal'){throw 'Normal CPU required'}
-if((Get-FileHash -LiteralPath (Join-Path $AxilCpuBuild 'rtl/VexAxilCpu.v')).Hash.ToLower() -ne '6bc91de7f76e88d7edf056e8d30790c645876bf13e7177e7827c949ff12d141e'){throw 'CPU input changed; audit configuration first'}
+if((Get-FileHash -LiteralPath (Join-Path $AxilCpuBuild 'rtl/VexAxilCpu.v')).Hash.ToLower() -ne 'd0e23f3c4de105dd2c547f41c4bc5f81dd89b3d7d6dba34db8b3062eea701a25'){throw 'CPU input changed; audit configuration first'}
 $uart=Join-Path $CpuInputRoot 'rtl/mini_uart.v'
 $fdc=Join-Path $ReferenceProject 'mini_first_board.fdc'
 if((Get-FileHash -LiteralPath $uart).Hash.ToLower() -ne '12c0b1b94fb3132e68587c72dfe431407dc12785024a07e81fac584a17f5a68e'){throw 'UART mismatch'}

@@ -5,7 +5,7 @@ import sys
 source=Path(sys.argv[1]).read_text()
 blocks=[]
 for suffix,code in (('',"0111"),('_1',"0011"),('_2',"1011")):
-    blocks.append(f"      if(when_CsrPlugin_l1302{suffix}) begin\n"
+    blocks.append(f"      if(when_CsrPlugin_l1304{suffix}) begin\n"
                   f"        CsrPlugin_interrupt_code <= 4'b{code};\n"
                   "        CsrPlugin_interrupt_targetPrivilege <= 2'b11;\n"
                   "      end\n")

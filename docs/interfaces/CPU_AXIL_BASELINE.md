@@ -8,7 +8,7 @@
 
 2026-09-27补充：[同时pending优先级](../../evidence/axil-irq-priority-20260927.md)通过机器模式 MEI > MSI > MTI、最高来源暂时屏蔽及 mret 后服务剩余请求的16种定向组合。生产CPU/桥/SoC未修改；本轮为RTL固件回归，不扩大原PDS/网表证据范围。嵌套、IRQ与同步异常竞争等仍NOT_RUN。
 
-新增阻塞项：[CSR边界验证](../../evidence/axil-csr-boundary-20260927.md)在现有CPU发现只读写保护、mepc低位、mret后MPP三个可复现问题。生产CPU未修复；不能以早期定向PASS宣称完整特权符合性。修复后需新CPU哈希及集成/PDS重新验收。
+已处理的缺陷：[CSR边界验证](../../evidence/axil-csr-boundary-20260927.md)发现的只读写保护、mepc低位、mret后MPP三项已通过[新CPU修复回归](../../evidence/axil-csr-fix-20260927.md)。新CPU哈希、脚本和PDS证据必须成套使用；有限定向PASS仍不代表完整特权符合性。
 
 工作顺序与验收门槛：
 

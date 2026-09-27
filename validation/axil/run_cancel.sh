@@ -3,7 +3,7 @@ set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 : "${AXIL_CPU_BUILD:?normal generated AXIL CPU build required}"
 test "$(cat "$AXIL_CPU_BUILD/mode.txt")" = normal
-test "$(sha256sum "$AXIL_CPU_BUILD/rtl/VexAxilCpu.v" | cut -d ' ' -f1)" = 6bc91de7f76e88d7edf056e8d30790c645876bf13e7177e7827c949ff12d141e
+test "$(sha256sum "$AXIL_CPU_BUILD/rtl/VexAxilCpu.v" | cut -d ' ' -f1)" = d0e23f3c4de105dd2c547f41c4bc5f81dd89b3d7d6dba34db8b3062eea701a25
 out=$(mktemp -d "${TMPDIR:-/tmp}/axil-cancel.XXXXXXXX")
 echo "OUTPUT=$out"
 exec > >(tee "$out/run.log") 2>&1
