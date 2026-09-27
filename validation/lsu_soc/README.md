@@ -70,3 +70,27 @@ python validation/lsu_soc/check_pds.py $Stage --self-test
 入口校验网表/固件哈希；同一测试台依次跑RTL、原始综合网表、冲突读值X注入、错误参考负向对照。原语冲突计数必须非零；两轮命令轨迹和独立参考结果必须一致。厂家库与网表不随仓库分发，不能用任意网表绕过哈希。
 
 这是无SDF功能回归，覆盖网表内固化混合程序，未穷尽冲突情形或回归全部RTL异常/在途复位用例。当前限定测试未复现寄存器堆冲突引起的架构错误，不删除警告；后续扩展专门间隔/寄存器/停顿/冲刷测试再生成独立网表。
+
+## CPU-WR-07：可扩展寄存器堆定向矩阵
+
+已建立[独立矩阵与两份网表实跑证据](../../evidence/regfile-matrix-20260927.md)。默认432组：x0/x1/x2/x7/x15/x16/x23/x27，0—5个NOP，rs1/rs2/双源三种消费方式，普通/除法停顿/分支冲刷三种上下文。另实跑48组停顿与冲刷叠加。每组的结果由Python整数模型给出，逐条检查输出地址和数据，不只观察结束标志。
+
+先设置PDS_STAGE为已核实的正常CPU/迁移SoC源文件暂存目录；TMPDIR可选。依赖与前述混合固件相同：
+
+```bash
+bash validation/lsu_soc/build_matrix.sh
+bash validation/lsu_soc/build_matrix.sh --registers 0,2,15,27 --gaps 0,1,3,5 --contexts divide_flush
+python3 -B -m unittest discover -s validation/lsu_soc -p test_regfile_matrix.py -v
+```
+
+输出包含汇编、ELF/反汇编、固件、cases.json、独立预期和测试台配置。`--registers`允许x0—x27（x28—x31留作测试工具）；`--gaps`允许0—32且不重复；`--contexts`可选plain/divide/flush/divide_flush。间隔是插入NOP数，**不是实际流水线周期数**。超过512个结果或16KiB ROM容量必须拆分批次，不截断固件。默认组与叠加组是两个批次，不是所有维度完全穷举。
+
+网表步骤：将本批次输出firmware.hex交给上述run_pds.ps1生成**新隔离工程**，运行check_pds.py。将PDS_STAGE改为该新工程目录，MATRIX_BUILD设为该批次build_matrix输出，PDS_SIM_LIB设为合法厂家库目录；核对新工程的固件、源文件、综合成功日志及网表SHA256，再设置NETLIST_SHA256：
+
+```bash
+bash validation/lsu_soc/run_matrix_netlist.sh
+```
+
+不得取任意旧网表的哈希来让检查通过；哈希锁定输入，不代替网表构建来源验证。不同参数改变固件，必须重新综合。runner对比新工程与本批次固件，并依次运行RTL、网表、冲突X注入和错误预期负向对照；全部预期、两轮轨迹和每个启用上下文的两个RAM副本非零冲突要求都须通过。自选很小矩阵可能未产生冲突，应记录覆盖缺口，不删检查。
+
+停顿来自真实DIV迭代；flush场景放置错误路径寄存器写及非法地址store，正确结果及无额外总线命令为判据。branch_cases是程序安排的用例数，不是内部冲刷脉冲计数。冲突日志以当前待完成用例分类，可能包含相邻指令，不能当作每个producer/consumer均碰撞的证明。没有SDF、外部总线随机背压或在途复位全矩阵；不改CPU、不屏蔽PDS警告、不上板。
