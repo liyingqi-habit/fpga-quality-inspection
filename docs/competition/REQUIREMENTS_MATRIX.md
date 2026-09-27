@@ -61,4 +61,6 @@ CPU-AXIL-07补充：[其他同步异常与中断竞争](../../evidence/axil-sync
 
 ## 更新方法
 
+CPU-AXIL-08补充：[嵌套及处理中复位](../../evidence/axil-nested-reset-20260927.md)36正常/324局部复位配置通过，25项检查器负向及两个实际故障对照通过。仅补充CPU定向RTL证据；通用上下文切换、完整ISA、该固件综合网表和板级验收仍不能据此升级。
+
 每次状态升级必须提供受测commit、输入版本/哈希、命令、实际输出、未覆盖项；没有证据仍NOT_RUN。T06相关任务见 [#6](https://github.com/liyingqi-habit/fpga-quality-inspection/issues/6) 与 [#20](https://github.com/liyingqi-habit/fpga-quality-inspection/issues/20)。完整T01—T15/G0—G7地图在待合并的 [PR #24](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/24)，不能假设本分支已有全部基础工具。

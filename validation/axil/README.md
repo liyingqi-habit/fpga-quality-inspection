@@ -90,6 +90,10 @@ bash validation/axil/run_soc.sh
 
 设置 AXIL_CPU_BUILD 后执行 `bash validation/axil/run_sync_competition.sh`。ECALL、EBREAK、非法零编码、LW/SW未对齐、JALR未对齐及取指访问错误，分别与MSI/MTI/MEI、mie开启/屏蔽及三种到达窗口交叉，共126配置/252次启动。140项检查器负向与实际取指error抑制负向被拒绝，原访存竞争也已重跑通过。详见[CPU-AXIL-07证据](../../evidence/axil-sync-competition-20260927.md)。嵌套、全局MIE屏蔽交叉、在途复位和本固件网表验证仍NOT_RUN。
 
+## 两层处理与局部复位
+
+新增边界验证：设置相同AXIL_CPU_BUILD，运行 `bash validation/axil/run_nested.sh`。两层IRQ/ECALL处理与延后服务共36配置，5个CPU局部复位窗口共324配置；25项检查器负向、错误固件恢复与旧响应回送两种实际故障对照均被拒绝。复位目标保留、已接受写不回滚；132配置实际保留非零pending。详见[CPU-AXIL-08证据](../../evidence/axil-nested-reset-20260927.md)。使用保留寄存器保存两层现场，不是通用RTOS；综合SoC未接局部cancel，本固件网表/板级测试NOT_RUN。
+
 ## PDS 和综合网表
 
 `run_pds.ps1` 接收 PdsShell、AxilCpuBuild、CpuInputRoot、SocRun、ReferenceProject；复制隔离 ASCII 临时目录，保留输入哈希、原生 .pds 和报告。仅综合/dev_map/pnr/report_timing；不产 bitstream、不下载。ReferenceProject 仅提供 hash 固定的旧候选 FDC。
