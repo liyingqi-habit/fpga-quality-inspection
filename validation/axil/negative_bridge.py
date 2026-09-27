@@ -7,6 +7,7 @@ mutations = {
     'lost_error': ('rsp_error<=writing ? bresp!=0 : rresp!=0;', "rsp_error<=1'b0;"),
     'stale_response': ('if(!cancelled && !reset_request)', "if(1'b1)"),
     'lost_backpressure': ('ar_sent && allow_response;', 'ar_sent;'),
+    'early_release': ('bus_reset || reset_request || cancelled;', 'bus_reset || reset_request;'),
 }
 for name, (before, after) in mutations.items():
     if source.count(before) != 1:
