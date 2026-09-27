@@ -80,6 +80,12 @@ bash validation/axil/run_soc.sh
 
 设置相同 AXIL_CPU_BUILD、CPU_INPUT_ROOT 后执行 `bash validation/axil/run_csr.sh`。195个定向用例各跑两次，记录3120条结果；检查器17项负向自测及三种实际RTL修复撤销检查均通过。新生成CPU哈希为 `d0e23f3c4de105dd2c547f41c4bc5f81dd89b3d7d6dba34db8b3062eea701a25`，旧生成目录不能直接复用，需在新目录重跑 generate.sh。详见 [修复证据](../../evidence/axil-csr-fix-20260927.md)；[旧失败快照](../../evidence/axil-csr-boundary-20260927.md)保持不变，可在提交af5912e复现。测试预期没有为修复放宽。范围包括只读ID/计数别名、未映射CSR、mscratch、固定misa、mie、mstatus、mepc及Direct-only mtvec；完整CSR边界仍未覆盖。
 
+## 访存异常与中断竞争
+
+设置相同 AXIL_CPU_BUILD 后执行 `bash validation/axil/run_competition.sh`。LW/SW × MSI/MTI/MEI × mie开启/屏蔽 × 3种IRQ到达窗口 × SLVERR/DECERR × 2档目标延迟，共144配置，每配置两次启动。独立CSR记录与握手/退休轨迹核对故障PC、异常先后、寄存器保留、pending及mret后服务；20项检查器负向和2个实际桥错误抑制变体均被拒绝。
+
+这是专用真实CPU+AXIL桥RTL夹具，不 force CPU内部状态，不经过原SoC外设IRQ来源。ECALL等其他同步异常竞争、嵌套、全局MIE屏蔽交叉和本固件网表验证仍NOT_RUN。参见[证据与明确边界](../../evidence/axil-irq-exception-20260927.md)。
+
 ## PDS 和综合网表
 
 `run_pds.ps1` 接收 PdsShell、AxilCpuBuild、CpuInputRoot、SocRun、ReferenceProject；复制隔离 ASCII 临时目录，保留输入哈希、原生 .pds 和报告。仅综合/dev_map/pnr/report_timing；不产 bitstream、不下载。ReferenceProject 仅提供 hash 固定的旧候选 FDC。

@@ -32,7 +32,7 @@ CPU-WR-05补充：[E5 在途复位/混合指令](../../evidence/lsu-extended-202
 |R04 实现方式/平台|Verilog/SystemVerilog；推荐开发板或紫光同创FPGA平台|SV测试代码、PDS综合摘要E1：PARTIAL；盘古200K MINI完整硬件身份及匹配工程仍待确认|T01/T02：确认板卡/核心板版本、合法工程及约束；生成RTL参赛方式另行正式澄清|
 |R05 高阶|两路组相联指令Cache和数据Cache，优化突发访问|当前公开测试包无对应完整实现证据：NOT_RUN|T06：分别验证I/D Cache结构、命中/缺失/替换、写策略、突发及错误复位；不得把无Cache先导当完成|
 |R06 高阶|动态分支预测（如BTB）|无专门预测效果、恢复与结构验收：NOT_RUN|T06：固定配置，测预测命中/失误恢复和副作用；BTB是原文举例，不将例子擅自升级为唯一实现|
-|R07 高阶|完整RISC-V异常/中断机制|PARTIAL；9类同步异常、中断优先级及[CSR三项修复回归](../../evidence/axil-csr-fix-20260927.md)已定向通过，原CSR失败留档；完整验收仍NOT_RUN|T06：补嵌套、其余CSR边界与最终系统回归；不把有限定向PASS称为全部特权机制完成|
+|R07 高阶|完整RISC-V异常/中断机制|PARTIAL；9类同步异常、中断优先级、[CSR三项修复回归](../../evidence/axil-csr-fix-20260927.md)及[访存错误/IRQ竞争](../../evidence/axil-irq-exception-20260927.md)已定向通过，原CSR失败留档；完整验收仍NOT_RUN|T06：补其余同步异常竞争、嵌套、其余CSR边界与最终系统回归；不把有限定向PASS称为全部特权机制完成|
 |R08 高阶应用|基于所设计CPU构建边缘AI加速，移植YOLO或轻量模型，结合传感/显示完成应用|传送带质检是团队方案，完整设备内AI未验收：NOT_RUN|T03/T07—T10/T13：真实图像、模型、整数参考与硬件加速一致，CPU调度及整图运行证据；PC代算不得冒充设备执行|
 |R09 测评环境|列明riscv32-unknown-elf-gcc、CoreMark v1.0|先导实跑使用riscv64-unknown-elf-gcc 14.2.0；尚无正式CoreMark结果：PARTIAL/NOT_RUN|T15：核实RV32目标编译参数和产物；与原文工具链名称差异须记录并澄清，不凭工具前缀断言一致|
 |R10 性能测量|CoreMark运行不少于10秒，评估CoreMark/MHz|无合规计时、迭代与校验报告：NOT_RUN|T15：固定CoreMark版本、参数、CPU频率和计时方法，原始日志证明时长至少10秒及结果正确|

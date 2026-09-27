@@ -6,7 +6,7 @@
 
 后续补充：[真实CPU+新AXIL取消](../../evidence/axil-cancel-20260927.md)已在专用集成测试台通过84场景及负向对照；综合SoC局部cancel仍固定0。此项不改变上述总线合同，也不宣称板级取消验证完成。
 
-2026-09-27补充：[同时pending优先级](../../evidence/axil-irq-priority-20260927.md)通过机器模式 MEI > MSI > MTI、最高来源暂时屏蔽及 mret 后服务剩余请求的16种定向组合。生产CPU/桥/SoC未修改；本轮为RTL固件回归，不扩大原PDS/网表证据范围。嵌套、IRQ与同步异常竞争等仍NOT_RUN。
+2026-09-27补充：[同时pending优先级](../../evidence/axil-irq-priority-20260927.md)通过机器模式 MEI > MSI > MTI、最高来源暂时屏蔽及 mret 后服务剩余请求的16种定向组合。生产CPU/桥/SoC未修改；本轮为RTL固件回归，不扩大原PDS/网表证据范围。后续[访存错误与IRQ竞争](../../evidence/axil-irq-exception-20260927.md)已通过144配置/288次启动及负向检查；嵌套和其余同步异常竞争等仍NOT_RUN。
 
 已处理的缺陷：[CSR边界验证](../../evidence/axil-csr-boundary-20260927.md)发现的只读写保护、mepc低位、mret后MPP三项已通过[新CPU修复回归](../../evidence/axil-csr-fix-20260927.md)。新CPU哈希、脚本和PDS证据必须成套使用；有限定向PASS仍不代表完整特权符合性。
 
