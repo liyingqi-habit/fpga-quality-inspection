@@ -2,6 +2,10 @@
 .section .text.start,"ax"
 .option norvc
 .global _start, fault_pc, younger_pc, resume, resume_end, handler
+#ifndef SYNC_KIND
+#define SYNC_KIND -1
+#endif
+.global armed, fetch_jump
 _start:
   j main
 .org 0x80
@@ -52,6 +56,11 @@ main:
   li s6,0
   li s7,0x13579bdf
   li s0,0x10000000
+#if SYNC_KIND == 5
+  li s0,0x80000202
+#elif SYNC_KIND == 6
+  li s0,0x20000000
+#endif
 #if MASKED
   csrw mie,zero
 #else
@@ -59,8 +68,29 @@ main:
   csrw mie,t0
 #endif
   csrsi mstatus,8
+armed:
+  nop
+  nop
+fetch_jump:
+#if SYNC_KIND == 6
+  jalr zero,0(s0)
+#endif
 fault_pc:
-#if WRITE
+#if SYNC_KIND == 0
+  ecall
+#elif SYNC_KIND == 1
+  ebreak
+#elif SYNC_KIND == 2
+  .word 0
+#elif SYNC_KIND == 3
+  lw s5,1(s0)
+#elif SYNC_KIND == 4
+  sw s5,2(s0)
+#elif SYNC_KIND == 5
+  jalr s5,0(s0)
+#elif SYNC_KIND == 6
+  nop // Unreachable fall-through of the fetch-fault jump.
+#elif WRITE
   sw s5,0(s0)
 #else
   lw s5,0(s0)

@@ -84,7 +84,11 @@ bash validation/axil/run_soc.sh
 
 设置相同 AXIL_CPU_BUILD 后执行 `bash validation/axil/run_competition.sh`。LW/SW × MSI/MTI/MEI × mie开启/屏蔽 × 3种IRQ到达窗口 × SLVERR/DECERR × 2档目标延迟，共144配置，每配置两次启动。独立CSR记录与握手/退休轨迹核对故障PC、异常先后、寄存器保留、pending及mret后服务；20项检查器负向和2个实际桥错误抑制变体均被拒绝。
 
-这是专用真实CPU+AXIL桥RTL夹具，不 force CPU内部状态，不经过原SoC外设IRQ来源。ECALL等其他同步异常竞争、嵌套、全局MIE屏蔽交叉和本固件网表验证仍NOT_RUN。参见[证据与明确边界](../../evidence/axil-irq-exception-20260927.md)。
+这是专用真实CPU+AXIL桥RTL夹具，不 force CPU内部状态，不经过原SoC外设IRQ来源。参见[证据与明确边界](../../evidence/axil-irq-exception-20260927.md)。
+
+## 其他同步异常与中断竞争
+
+设置 AXIL_CPU_BUILD 后执行 `bash validation/axil/run_sync_competition.sh`。ECALL、EBREAK、非法零编码、LW/SW未对齐、JALR未对齐及取指访问错误，分别与MSI/MTI/MEI、mie开启/屏蔽及三种到达窗口交叉，共126配置/252次启动。140项检查器负向与实际取指error抑制负向被拒绝，原访存竞争也已重跑通过。详见[CPU-AXIL-07证据](../../evidence/axil-sync-competition-20260927.md)。嵌套、全局MIE屏蔽交叉、在途复位和本固件网表验证仍NOT_RUN。
 
 ## PDS 和综合网表
 

@@ -57,6 +57,8 @@ CPU-WR-07补充：[寄存器矩阵证据](../../evidence/regfile-matrix-20260927
 
 由所有者通过正式渠道询问，答复记录来源、日期、适用版本、原问题和影响任务。本文件不代发询问。
 
+CPU-AXIL-07补充：[其他同步异常与中断竞争](../../evidence/axil-sync-competition-20260927.md)完成ECALL等7类的126配置/252次启动，负向与原访存竞争回归通过。它仅补充CPU异常控制的定向RTL证据，不将完整ISA、参赛复用合规、网表或上板状态升级为已验收。
+
 ## 更新方法
 
 每次状态升级必须提供受测commit、输入版本/哈希、命令、实际输出、未覆盖项；没有证据仍NOT_RUN。T06相关任务见 [#6](https://github.com/liyingqi-habit/fpga-quality-inspection/issues/6) 与 [#20](https://github.com/liyingqi-habit/fpga-quality-inspection/issues/20)。完整T01—T15/G0—G7地图在待合并的 [PR #24](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/24)，不能假设本分支已有全部基础工具。
