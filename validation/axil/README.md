@@ -76,6 +76,10 @@ bash validation/axil/run_soc.sh
 
 原始轨迹、固件/反汇编、audit.json 和哈希留在脚本打印的本地目录。详见 [证据与限制](../../evidence/axil-irq-priority-20260927.md)。这是仲裁前同时处于 pending，不是同一时钟沿产生三种请求；不覆盖嵌套或全部中断竞争。
 
+## CSR 只读保护与合法取值边界（当前 FAIL）
+
+设置相同 AXIL_CPU_BUILD、CPU_INPUT_ROOT 后执行 `bash validation/axil/run_csr.sh`。195个定向用例各跑两次，记录3120条结果；检查器17项负向自测通过。当前固定CPU实测只读写保护、mepc低位及mret后MPP存在问题，脚本返回1；不是已验收功能。详见 [失败证据、复现与修复门槛](../../evidence/axil-csr-boundary-20260927.md)。范围包括只读ID/计数别名、未映射CSR、mscratch、固定misa、mie、mstatus、mepc及Direct-only mtvec。完整CSR边界仍未覆盖，不能删掉上述NOT_RUN的“全部”限定。
+
 ## PDS 和综合网表
 
 `run_pds.ps1` 接收 PdsShell、AxilCpuBuild、CpuInputRoot、SocRun、ReferenceProject；复制隔离 ASCII 临时目录，保留输入哈希、原生 .pds 和报告。仅综合/dev_map/pnr/report_timing；不产 bitstream、不下载。ReferenceProject 仅提供 hash 固定的旧候选 FDC。
