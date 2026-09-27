@@ -44,7 +44,9 @@ bash validation/write_response/run.sh
 
 ## 4. 原CPU回归和PDS边界
 
-最新[最小SoC迁移入口](../../validation/lsu_soc/README.md)已把新CPU接回本地ROM/RAM/UART/GPIO响应目标，另行验证读/子字/分支冲刷。仍需生成CPU和已核实UART外部输入；该版本没有新的PDS或上板结论。
+当前最新入口是 [AXI4-Lite/机器模式基线](../../validation/axil/README.md)，含生成配置、可综合桥/SoC、独立预期及同版本PDS/网表流程。队员可先运行 `bash validation/axil/run_bridge.sh`（Python3/Icarus，无需CPU外部输入）。完整SoC回归另需合法上游源码、生成工具和UART输入。PDS/网表离线通过不代表上板验收。
+
+此前[最小SoC迁移入口](../../validation/lsu_soc/README.md)保留为历史回归，其旧CPU、网表和证据不能混用到新基线。
 
 新增[真实LSU实验入口](../../validation/real_lsu/README.md)：需要固定上游源码、Java/sbt生成环境；不使用原CPU_INPUT_ROOT四文件作为新配置。它是另一套受测配置，不把旧CPU回归结果自动继承过来。生成/运行/故障对照分别按该目录说明执行。
 

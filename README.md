@@ -17,5 +17,6 @@
 - [可扩展寄存器堆矩阵](evidence/regfile-matrix-20260927.md)：432组基础＋48组停顿/冲刷叠加，独立固件与对应综合网表对照；不是穷尽验证。
 - [外部写总线背压与分支交叉](validation/bus_flush/README.md)：真实CPU＋实验写桥，432种时序配置；RTL验证，不是完整AXI/DDR或上板结果。
 - [AXI4-Lite 与机器模式离线基线](validation/axil/README.md)：32 位单在途读写桥、真实 CPU/SoC、RV32IM 独立预期及异常/中断；范围和未测项目明确列出。
+- [AXIL 同版本 PDS/网表验收](evidence/axil-pds-20260927.md)：实际综合、碰撞X注入与27MHz约束内时序；旧候选板级约束未获实物确认。
 
 本分支为 `task/T06-cpu-validation-contract`，对应 [PR #25](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/25)。协作基础在另一个尚待合并的 [PR #24](https://github.com/liyingqi-habit/fpga-quality-inspection/pull/24)，两者不是已集成版本。

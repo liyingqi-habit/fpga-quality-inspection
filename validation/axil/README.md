@@ -10,7 +10,7 @@ Linux/WSL，Bash、Icarus Verilog 12、sha256sum：
 bash validation/axil/run_bridge.sh
 ```
 
-576 个组合：读/写 × 4 种 RESP × 3 档延迟 × 6 个正常/取消窗口 × 4 种 WSTRB；另有两种永不响应隔离。驱动是测试替身，不是真 CPU。验证独立 AW/W、AR/R、响应背压、载荷保持、复位沿取消优先及排空后复用。无响应观察 40 周期，不声称无限时间形式证明。
+576 个组合：读/写 × 4 种 RESP × 3 档延迟 × 6 个正常/取消窗口 × 4 种 WSTRB；另有两种永不响应隔离，以及错误丢失、旧响应泄漏、读背压丢失三种实际 RTL 故障注入，必须因预期原因失败。驱动是测试替身，不是真 CPU。验证独立 AW/W、AR/R、响应背压、载荷保持、复位沿取消优先及排空后复用。无响应观察 40 周期，不声称无限时间形式证明。
 
 ## 生成实际 CPU 并跑 SoC
 
@@ -72,4 +72,4 @@ SoC 局部 CPU 取消输入固定 0；全局复位同时清桥/目标。局部�
 ./validation/axil/run_pds.ps1 -PdsShell <pds_shell.exe> -AxilCpuBuild <生成目录> -CpuInputRoot <合法输入> -SocRun <run_soc输出> -ReferenceProject <旧候选工程>
 ```
 
-检查报告用 `python3 -B validation/lsu_soc/check_pds.py <PDS输出> --self-test`。网表功能回归设置 PDS_STAGE、PDS_SIM_LIB 后执行 `bash validation/axil/run_netlist.sh`。综合网表探针依赖已核验的特定网表，哈希变化先审计，不自动接受。当前 PDS/网表实际结果由单独证据报告给出，不由脚本存在推定 PASS。
+检查报告用 `python3 -B validation/lsu_soc/check_pds.py <PDS输出> --self-test`。网表功能回归设置 PDS_STAGE、PDS_SIM_LIB 后执行 `bash validation/axil/run_netlist.sh`。综合网表探针依赖已核验的特定网表，哈希变化先审计，不自动接受。当前 PDS/网表实际结果见 [同版本离线验收](../../evidence/axil-pds-20260927.md)，不是由脚本存在推定 PASS。
