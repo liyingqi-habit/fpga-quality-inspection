@@ -4,7 +4,12 @@ here=$(cd "$(dirname "$0")" && pwd)
 : "${PDS_STAGE:?Actual AXIL PDS stage}"
 : "${PDS_SIM_LIB:?Installed vendor simulation library}"
 net="$PDS_STAGE/prj_tasks/syn_1/synthesize/mini_soc_first_board_syn.vm"
-test "$(sha256sum "$net" | cut -d ' ' -f1)" = 4cf1fb1932d73a55b954a5929049d9adeda5f6bda85402c11273f23d68eae46d
+# RC1 rebuild differs only in generated date and temporary FDC path comments.
+# Keep an exact allow-list: do not silently accept an arbitrary new netlist.
+case "$(sha256sum "$net" | cut -d ' ' -f1)" in
+  4cf1fb1932d73a55b954a5929049d9adeda5f6bda85402c11273f23d68eae46d|8efd765ae42e010c993f8544b69be9c903a51bd1870be5f98e4aea6332f88352) ;;
+  *) echo 'Unreviewed synthesis netlist hash' >&2; exit 1 ;;
+esac
 test "$(sha256sum "$PDS_STAGE/VexAxilCpu.v" | cut -d ' ' -f1)" = d0e23f3c4de105dd2c547f41c4bc5f81dd89b3d7d6dba34db8b3062eea701a25
 test "$(sha256sum "$PDS_STAGE/firmware.hex" | cut -d ' ' -f1)" = 773e5cbb012284d43806645e83d90c6e879e85d6ea70ee806b855775839791b1
 out=$(mktemp -d "${TMPDIR:-/tmp}/axil-netlist.XXXXXXXX")

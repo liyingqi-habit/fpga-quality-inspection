@@ -96,6 +96,12 @@ bash validation/axil/run_soc.sh
 
 ## PDS 和综合网表
 
+当前固定候选统一结果见[RC1记录](../../evidence/axil-candidate-rc1-20260927.md)，[板级准入清单](../../docs/board/CPU_RC1_BOARD_AUDIT.md)仍未全部满足。
+
+设置上文的AXIL_CPU_BUILD、CPU_INPUT_ROOT，运行 `bash validation/axil/run_candidate.sh` 可顺序重跑soc、bridge、irq、csr、cancel、competition、sync_competition、nested。脚本固定源提交 `1d86be3642daf0cca175e6c2066fc8b93406d0e6`，源变更必须另行审核新候选，不能删除门禁。WSL若不能解析Windows创建的工作树，可用CANDIDATE_GIT指向已安装的Windows git.exe；正常Linux工作树无需设置。TMPDIR可指向本地私有日志目录。
+
+统一入口只跑RTL；下列PDS和网表仍须分别执行。网表白名单只含审核过的文件：即使重建只改变生成注释，新的哈希也必须先比较差异。当前固件依赖测试台判分/IRQ激励，不能直接当作板级串口自检程序。
+
 `run_pds.ps1` 接收 PdsShell、AxilCpuBuild、CpuInputRoot、SocRun、ReferenceProject；复制隔离 ASCII 临时目录，保留输入哈希、原生 .pds 和报告。仅综合/dev_map/pnr/report_timing；不产 bitstream、不下载。ReferenceProject 仅提供 hash 固定的旧候选 FDC。
 
 ```powershell

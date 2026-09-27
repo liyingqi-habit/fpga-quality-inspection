@@ -7,6 +7,7 @@
 
 ## 当前任务分支入口
 
+- [CPU RC1固定候选统一回归](evidence/axil-candidate-rc1-20260927.md)：八套RTL、新综合网表与PDS已约束路径通过；[板级准入清单](docs/board/CPU_RC1_BOARD_AUDIT.md)仍有阻塞，不是可直接下载验收的版本。
 - [赛题逐项对照表](docs/competition/REQUIREMENTS_MATRIX.md)：要求、已有证据、未完成项和验收方式。
 - [队员上手指南](docs/team/GETTING_STARTED.md)：看代码、评审、修改和运行测试。
 - [CPU 离线测试](validation/cpu/README.md)：需要合法外部输入，不是完整可上板工程。
