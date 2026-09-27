@@ -19,7 +19,8 @@ def read(path):
         return [{k: int(v) for k, v in row.items()} for row in csv.DictReader(stream)]
 
 
-def check(rows, ident):
+def check(rows, ident, young_pc=0x80000014, errors=None):
+    errors = ERRORS if errors is None else errors
     slot = None
     primary = None
     aw_hold = w_hold = b_hold = None
@@ -58,8 +59,8 @@ def check(rows, ident):
             need(r['cpu_reset'] and r['busy'], 'QUARANTINE_LOST')
         need(r['epoch'] == (1 if reset_at is not None else 0), 'EPOCH_CONTEXT')
         if r['retire']:
-            need(r['retire_pc'] in {0x80000010, 0x80000014}, 'UNEXPECTED_STORE_RETIRE')
-            if r['retire_pc'] == 0x80000014:
+            need(r['retire_pc'] in {0x80000010, young_pc}, 'UNEXPECTED_STORE_RETIRE')
+            if r['retire_pc'] == young_pc:
                 need(young_transaction is not None and young_transaction['b'] and
                      young_transaction['resp'] == 0 and not young_transaction['cancel'], 'YOUNG_RETIRE_EARLY')
                 young_retires += 1
@@ -82,7 +83,7 @@ def check(rows, ident):
             young += 1
         if r['issue'] or r['young']:
             need(slot is None and not r['cpu_reset'], 'SLOT_REUSE')
-            need(r['pc'] == (0x80000010 if r['issue'] else 0x80000014), 'ISSUE_PC')
+            need(r['pc'] == (0x80000010 if r['issue'] else young_pc), 'ISSUE_PC')
             slot = dict(aw=None, w=None, b=False, resp=None, cancel=False, outcome=False,
                         young=bool(r['young']), epoch=r['epoch'])
             if r['issue']:
@@ -102,7 +103,7 @@ def check(rows, ident):
             need(slot is not None and slot['aw'] is not None and slot['w'] is not None, 'B_WITHOUT_REQUEST')
             need(ident != 11, 'UNEXPECTED_B')
             need(c > max(slot['aw'], slot['w']) + DELAYS[ident], 'EARLY_B')
-            expected = ERRORS.get(ident, 0) if slot['epoch'] == 0 else 0
+            expected = errors.get(ident, 0) if slot['epoch'] == 0 else 0
             need(r['resp'] == expected, 'B_CODE')
             if not r['br']:
                 stalls += 1
