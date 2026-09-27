@@ -40,7 +40,8 @@ module cpu_traps_tb;
   endtask
   initial begin
     reset_cpu;
-    wait(dut.d_valid && !dut.d_ready && dut.d_write && dut.d_addr==32'h10000000);
+    wait(accepted==1 && dut.tx_busy && dut.d_valid && !dut.d_ready &&
+         dut.d_write && dut.d_addr==32'h10000000 && dut.d_data[7:0]==8'h42);
     @(negedge clk);
     evidence;
     if(accepted!=1) $fatal(1,"Did not interrupt second UART write");

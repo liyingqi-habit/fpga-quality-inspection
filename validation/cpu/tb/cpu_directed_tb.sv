@@ -51,7 +51,11 @@ module cpu_directed_tb;
       if(stalled<20 || writes!=2 || dut.fault_count!==32'd1)
         $fatal(1,"Missing evidence: stall=%0d writes=%0d faults=%0d",stalled,writes,dut.fault_count);
       $display("PASS: run=%0d cases=27 UART=AB accepted=2 backpressure_cycles=%0d",run,stalled);
+`ifdef MIGRATED_SOC
+      $display("PASS: migrated case26 checks precise store trap PC/address/cause and mret");
+`else
       $display("KNOWN_GAP: invalid store continued, diagnostic count=1; no precise store trap");
+`endif
       rstn=0; bytes_seen=0;
     end
     $display("PASS: directed CPU tests and reset/reboot (RTL only)");

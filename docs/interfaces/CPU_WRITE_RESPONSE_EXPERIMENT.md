@@ -1,5 +1,7 @@
 # CPU-WR-03 写响应及复位实验接口 v0.1
 
+后续CPU-WR-04：[同一真实LSU已接入可读写的本地最小SoC](../../validation/lsu_soc/README.md)。下文write_bridge仍仅为外部写实验；不将本地响应接口等同于新增AXI读桥，复位边界亦不同。
+
 2026-09-27：按所有者本轮指令实现并验证；**DRAFT_IMPLEMENTED，待两名非作者评审，不冻结整机ABI**。这是单时钟、无Cache、无LR/SC/MMU、单槽单beat实验，不替代DDR/DMA设计。
 
 ## 真实LSU改造

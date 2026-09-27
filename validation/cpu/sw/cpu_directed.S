@@ -8,10 +8,26 @@ _start:
   j tests
   .org 0x80
 trap:
+#ifdef MIGRATED_SOC
+  csrr t3,mcause
+  li t4,7
+  bne t3,t4,fail
+  csrr t3,mepc
+  la t4,invalid_store
+  bne t3,t4,fail
+  csrr t4,mtval
+  li t5,0x20000000
+  bne t4,t5,fail
+  addi s6,s6,1
+  addi t3,t3,4
+  csrw mepc,t3
+  mret
+#else
   li t0, 0x10000010
   li t1, 0xee
   sw t1, 0(t0)
 1: j 1b
+#endif
 
 .macro check id, op, lhs, rhs, expected
   li s0, \id
@@ -23,6 +39,7 @@ trap:
 .endm
 
 tests:
+  li s6,0
 #ifdef CPU_TEST_MUTATION
   check 1, mul, -1, -1, 2
 #else
@@ -88,17 +105,21 @@ taken:
   lw t2, 4(s1)
   bnez t2, fail
 
-  /* Characterize the existing diagnostic-only invalid store behavior.
-   * This is NOT a precise store-access-fault compliance test. */
+  /* Default: characterize the legacy diagnostic-only invalid store.
+   * MIGRATED_SOC: handler validates precise cause7/PC/address and resumes. */
   li s0, 26
   li t0, 0x20000000
-  sw zero, 0(t0)
+invalid_store: sw zero, 0(t0)
   li t0, 0x10000028
   lw t2, 0(t0)
   li t3, 1
   bne t2, t3, fail
 
   /* No polling: the second write must wait while the first frame is busy. */
+#ifdef MIGRATED_SOC
+  li t3,1
+  bne s6,t3,fail
+#endif
   li s0, 27
   li t0, 0x10000000
   li t1, 0x41

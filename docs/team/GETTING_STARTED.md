@@ -44,6 +44,8 @@ bash validation/write_response/run.sh
 
 ## 4. 原CPU回归和PDS边界
 
+最新[最小SoC迁移入口](../../validation/lsu_soc/README.md)已把新CPU接回本地ROM/RAM/UART/GPIO响应目标，另行验证读/子字/分支冲刷。仍需生成CPU和已核实UART外部输入；该版本没有新的PDS或上板结论。
+
 新增[真实LSU实验入口](../../validation/real_lsu/README.md)：需要固定上游源码、Java/sbt生成环境；不使用原CPU_INPUT_ROOT四文件作为新配置。它是另一套受测配置，不把旧CPU回归结果自动继承过来。生成/运行/故障对照分别按该目录说明执行。
 
 原CPU回归另需RISC-V裸机GCC/objcopy/objdump和合法外部输入。先向所有者确认取得匹配版本的方法；原资料包不得直接上传公开仓库或随意转发。

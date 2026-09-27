@@ -16,6 +16,8 @@
 
 以下证据索引： [E1 CPU先导实跑摘要](../../evidence/cpu-validation-20260927.md)、[E2 写响应设施实跑](../../evidence/write-response-20260927.md)、[E3 真实LSU实验](../../evidence/real-lsu-20260927.md)、[A1 写完成源码审计](../interfaces/CPU_WR_01_AUDIT.md)、[D1 访存合同草案](../interfaces/CPU_BUS_CONTRACT_DRAFT.md)。E1是已有本地日志的公开摘要，非本轮全部重跑。
 
+补充证据：[E4 真实LSU最小SoC迁移与读写回归](../../evidence/lsu-soc-20260927.md)。E4为R01/R02/R03/R07增加局部证据：正常读、所有字节/半字通道、三处错误路径冲刷、六类访存异常，以及迁移后的UART/GPIO/计时与复位回归。上述项目仍为PARTIAL；不代表完整ISA、中断、DDR或完整工作站完成，也不覆盖迁移版PDS及实物验收。
+
 ## 要求、代码与缺口
 
 |编号 / 原文层级|要求概括|目前代码或证据 / 状态|下一步验收与任务|
