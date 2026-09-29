@@ -1,3 +1,5 @@
 # Keep the WSL build script and assembly stable on Windows checkouts.
 *.sh text eol=lf
 *.S text eol=lf
+*.sv text eol=lf
+*.py text eol=lf

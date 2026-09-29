@@ -1,4 +1,4 @@
-/* BA-0.1: UNVERIFIED board acceptance draft. No stack or RAM state.
+/* BA-0.2: board acceptance candidate, hardware UNVERIFIED. No stack/RAM state.
  * t3/t4 are exclusively trap scratch; s7..s11 are trap contract state.
  * No nesting, no C ABI, no actuator control. Match validation/axil/soc.sv.
  */
@@ -17,6 +17,12 @@ main:
   csrw mie,zero
   la t0,trap_vector
   csrw mtvec,t0
+  /* These CSRs have no defined reset value in this CPU configuration.
+   * A RAM failure before the first trap must still print defined diagnostics. */
+diagnostics_init:
+  csrw mepc,zero
+  csrw mcause,zero
+  csrw mtval,zero
   li s7,0
   li s8,-1
   li s9,0
@@ -309,7 +315,7 @@ quiet_failure:
 1: j 1b
 
 .section .rodata
-banner: .asciz "\r\nCPU BOARD ACCEPTANCE BA-0.1 UNVERIFIED\r\nCPU=RC1-d0e23f3c CLK=27000000 UART=115200-8N1\r\nBOOT RAM-DESTRUCTIVE NO-ACTUATORS\r\n"
+banner: .asciz "\r\nCPU BOARD ACCEPTANCE BA-0.2 UNVERIFIED\r\nCPU=RC1-d0e23f3c CLK=27000000 UART=115200-8N1\r\nBOOT RAM-DESTRUCTIVE NO-ACTUATORS\r\n"
 ram_ok: .asciz "PASS RAM 0x80004000..0x80007FFF 4 address-XOR passes\r\n"
 exceptions_ok: .asciz "PASS EXCEPTIONS ECALL ILLEGAL EBREAK\r\n"
 software_ok: .asciz "PASS IRQ SOFTWARE\r\n"
