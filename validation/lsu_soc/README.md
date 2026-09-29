@@ -1,0 +1,96 @@
+# CPU-WR-04：读写验证与最小SoC迁移
+
+状态：RTL实验集成，待团队审核；不是完整比赛工作站、PDS时序或板卡验收。原vex_minimal板级工程未修改，迁移版mini_soc.v单独保存在本目录。
+
+## 与前一步的关系
+
+复用CPU-WR-03正常生成的真实CPU，不再通过只接受写的实验write_bridge连接外设，而是把同一LSU显式响应合同接到本地ROM/RAM/UART/GPIO/计时MMIO。前一步AXI-like写桥保留独立回归，其读通道仍未实现；本步不是新增AXI AR/R总线。
+
+CPU在memory级发命令，writeBack级等待读/写响应。mini_soc对每次已接受命令恰好返回一次响应，RESPONSE_DELAY为0、7、31时分别验证；等待期间禁止新命令进入，读数据与错误信息保持到消费。RAM字节使能独立更新；非法写、ROM写、只读MMIO写报告错误并计数，CPU产生精确cause7。正常read返回ROM/RAM/MMIO数据，非法read产生cause5。
+
+## 运行
+
+依赖Bash、Icarus/vvp、Python3、RISC-V裸机GCC/objcopy/objdump、sha256sum。先按[真实LSU生成说明](../real_lsu/README.md)准备正常CPU。
+
+设置REAL_LSU_BUILD为正常生成目录，CPU_INPUT_ROOT为合法旧最小SoC输入目录（本步只读取rtl/mini_uart.v，固定哈希校验），TMPDIR可设置为持久结果父目录。然后在仓库根执行：
+
+```bash
+bash validation/lsu_soc/run.sh
+```
+
+脚本创建独立临时工作目录，复制公开测试、迁移SoC与已核实UART，只修改暂存脚本以启用MIGRATED_SOC测试预期；不覆盖原工程或原固件。当前仍需外部UART输入及生成CPU，不能宣称全新电脑无依赖一键构建。无厂家库或原资料包上传。
+
+## 覆盖内容
+
+|检查|操作与独立判据|
+|---|---|
+|正常读|ROM常数、RAM读回、RAM末字、load立即使用、MMIO；汇编用独立常量检查|
+|字节/半字|四个SB通道、两个SH位置、LB/LBU/LH/LHU正负值与扩展；测试台核对mask及最终RAM|
+|分支冲刷|beq后错误路径RAM写、jal后UART写、bne后非法读；测试台禁止前两地址任何总线请求，并要求非法读只接受合法测试的1次；另测未跳转分支的正确写|
+|异常|非法read、非法write、ROM write、只读MMIO write、未对齐LH/SH；逐次检查mcause/mepc/mtval、mret返回及六次trap|
+|响应时序|记录每次命令/响应，检查一进一出、最小延迟、store在匹配成功响应之后退休、背压载荷稳定|
+|重新启动|三种延迟均两轮启动；每轮必须19次读、13次写，命令/响应数一致|
+|原功能迁移|启动、data/BSS、M、UART收发/回显、GPIO/按键、计时；原27例与异常/复位测试重新执行|
+
+旧27例中的case26过去预期“非法写只计数并继续”。MIGRATED_SOC宏改为实际检查cause7/原PC/地址及mret，默认宏关闭时保留旧语义。旧UART复位定位增加accepted==1、tx_busy及字符B判据，避免将等待上一笔响应误认为第二个UART字符受阻。
+
+负向测试包含原有错误MUL、错误mcause，加上新错误半字结果、错误LBU符号预期、故意改变分支使错误路径store真实发出；必须以对应错误信息被拒绝，不能任意失败就算通过。
+
+## 复位及副作用边界
+
+此最小SoC的rstn复位整个本地CPU/响应寄存器/UART；RAM不清零。片上写在命令接受时已生效，响应延迟只延迟确认；复位不回滚RAM。UART读在接受时弹出接收数据。这不是CPU局部复位与外部DDR仍运行的场景，不能替代CPU-WR-03桥的排空/隔离验证。
+
+旧地址图及MMIO宽度策略仅作迁移兼容，不冻结最终整机ABI。无Cache/预测/完整中断/DDR/DMA、多ID/burst或跨时钟验收；PDS离线结果见下节，板卡未验收。
+
+输出run.log、各轮固件ELF/反汇编/HEX、access_trace.csv、输入哈希与负向日志。详见[本步证据](../../evidence/lsu-soc-20260927.md)。物理步骤仍需人工监管。
+
+## CPU-WR-05：在途复位与混合指令
+
+保持相同环境变量，执行 `bash validation/lsu_soc/run_extended.sh`。24个复位窗口覆盖读、写、读错误、写错误，延迟7/31，在接受后、即将响应、响应已出现但未采样时全局复位。检查响应清除、事务计数守恒、RAM已接受写不回滚、无旧响应及正常重启。
+
+混合程序32组输入串联load依赖、算术/移位/MUL/DIV/REM、子字读写、符号分支和JAL/JALR。Python整数模型给出256字独立预期；三档延迟各两轮，逐字核对及核对访问次数。两项负向故障必须被指定检查拒绝。详见[扩展实跑证据](../../evidence/lsu-extended-20260927.md)。不宣称完整ISA或外部AXI/DDR复位通过。
+
+## 离线PDS实现检查（不是下载工程）
+
+Windows PowerShell运行；各变量指向本机合法输入。Firmware选择扩展测试产出的mixed-0/firmware.hex，ReferenceProject指向已核实哈希的原六端口工程。脚本只读原工程并建唯一临时目录。
+
+```powershell
+./validation/lsu_soc/run_pds.ps1 -PdsShell $PdsShell -RealLsuBuild $RealLsuBuild -CpuInputRoot $CpuInputRoot -Firmware $Firmware -ReferenceProject $ReferenceProject
+python validation/lsu_soc/check_pds.py $Stage --self-test
+```
+
+`$Stage`使用脚本输出的STAGE目录。PDS2025.2/ADS、PG2L200H -6 FBB676、原包装层及候选FDC均固定。缺输入或哈希不匹配就停止，不补造引脚。入口无gen_bit_stream或下载命令。
+
+本次完成综合、映射、布局布线及快慢角时序报告；27MHz目标的已约束路径通过，但保留异步输入例外与零输出延迟限制，不宣称物理板级时序闭合。详见[PDS证据及警告](../../evidence/lsu-pds-20260927.md)。下一步优先迁移版综合网表功能回归，并确认实际板级约束；不会自动上板。
+
+## CPU-WR-06：综合网表功能回归
+
+上述PDS固定网表已完成[混合固件功能及寄存器堆冲突回归](../../evidence/lsu-netlist-20260927.md)。设置PDS_STAGE（完整原PDS阶段目录）、PDS_SIM_LIB（本机合法厂家Verilog库）、可选TMPDIR，运行 `bash validation/lsu_soc/run_netlist.sh`。
+
+入口校验网表/固件哈希；同一测试台依次跑RTL、原始综合网表、冲突读值X注入、错误参考负向对照。原语冲突计数必须非零；两轮命令轨迹和独立参考结果必须一致。厂家库与网表不随仓库分发，不能用任意网表绕过哈希。
+
+这是无SDF功能回归，覆盖网表内固化混合程序，未穷尽冲突情形或回归全部RTL异常/在途复位用例。当前限定测试未复现寄存器堆冲突引起的架构错误，不删除警告；后续扩展专门间隔/寄存器/停顿/冲刷测试再生成独立网表。
+
+## CPU-WR-07：可扩展寄存器堆定向矩阵
+
+已建立[独立矩阵与两份网表实跑证据](../../evidence/regfile-matrix-20260927.md)。默认432组：x0/x1/x2/x7/x15/x16/x23/x27，0—5个NOP，rs1/rs2/双源三种消费方式，普通/除法停顿/分支冲刷三种上下文。另实跑48组停顿与冲刷叠加。每组的结果由Python整数模型给出，逐条检查输出地址和数据，不只观察结束标志。
+
+先设置PDS_STAGE为已核实的正常CPU/迁移SoC源文件暂存目录；TMPDIR可选。依赖与前述混合固件相同：
+
+```bash
+bash validation/lsu_soc/build_matrix.sh
+bash validation/lsu_soc/build_matrix.sh --registers 0,2,15,27 --gaps 0,1,3,5 --contexts divide_flush
+python3 -B -m unittest discover -s validation/lsu_soc -p test_regfile_matrix.py -v
+```
+
+输出包含汇编、ELF/反汇编、固件、cases.json、独立预期和测试台配置。`--registers`允许x0—x27（x28—x31留作测试工具）；`--gaps`允许0—32且不重复；`--contexts`可选plain/divide/flush/divide_flush。间隔是插入NOP数，**不是实际流水线周期数**。超过512个结果或16KiB ROM容量必须拆分批次，不截断固件。默认组与叠加组是两个批次，不是所有维度完全穷举。
+
+网表步骤：将本批次输出firmware.hex交给上述run_pds.ps1生成**新隔离工程**，运行check_pds.py。将PDS_STAGE改为该新工程目录，MATRIX_BUILD设为该批次build_matrix输出，PDS_SIM_LIB设为合法厂家库目录；核对新工程的固件、源文件、综合成功日志及网表SHA256，再设置NETLIST_SHA256：
+
+```bash
+bash validation/lsu_soc/run_matrix_netlist.sh
+```
+
+不得取任意旧网表的哈希来让检查通过；哈希锁定输入，不代替网表构建来源验证。不同参数改变固件，必须重新综合。runner对比新工程与本批次固件，并依次运行RTL、网表、冲突X注入和错误预期负向对照；全部预期、两轮轨迹和每个启用上下文的两个RAM副本非零冲突要求都须通过。自选很小矩阵可能未产生冲突，应记录覆盖缺口，不删检查。
+
+停顿来自真实DIV迭代；flush场景放置错误路径寄存器写及非法地址store，正确结果及无额外总线命令为判据。branch_cases是程序安排的用例数，不是内部冲刷脉冲计数。冲突日志以当前待完成用例分类，可能包含相邻指令，不能当作每个producer/consumer均碰撞的证明。没有SDF、外部总线随机背压或在途复位全矩阵；不改CPU、不屏蔽PDS警告、不上板。

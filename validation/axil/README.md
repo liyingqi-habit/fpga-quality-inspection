@@ -1,0 +1,111 @@
+# 单在途 AXI4-Lite / RV32IM 机器模式离线基线
+
+这是经所有者批准的 CPU 离线集成范围，不是完整比赛 CPU、DDR/DMA 系统或可直接下载的板级工程。源生成配置、桥、SoC、测试和独立预期公开；厂家库、原资料及生成 CPU/网表留本地合法输入目录。接口见 [CPU_AXIL_BASELINE](../../docs/interfaces/CPU_AXIL_BASELINE.md)，结果见 [实跑证据](../../evidence/axil-baseline-20260927.md)。
+
+## 可直接运行的桥测试
+
+Linux/WSL，Bash、Icarus Verilog 12、sha256sum：
+
+```bash
+bash validation/axil/run_bridge.sh
+```
+
+576 个组合：读/写 × 4 种 RESP × 3 档延迟 × 6 个正常/取消窗口 × 4 种 WSTRB；另有两种永不响应隔离，以及错误丢失、旧响应泄漏、读背压丢失三种实际 RTL 故障注入，必须因预期原因失败。驱动是测试替身，不是真 CPU。验证独立 AW/W、AR/R、响应背压、载荷保持、复位沿取消优先及排空后复用。无响应观察 40 周期，不声称无限时间形式证明。
+
+## 生成实际 CPU 并跑 SoC
+
+所需合法输入：VexRiscv 上游提交 `7445c66bb4bb508f096c1d4814b4fae1ea8643c0`，Java 17、sbt launcher 与本地仓库配置，以及此前核验的 mini_uart.v。RISC-V GCC 14.2 / objcopy / objdump、Python 3、Icarus。下列变量须指向本人实际目录，不复制他人的机器路径：
+
+```bash
+export VEX_SOURCE=/your/legal/VexRiscv
+export SBT_LAUNCH=/your/tools/sbt-launch.jar
+export SBT_REPOSITORIES=/your/tools/sbt-repositories
+export REAL_LSU_BUILD=/your/unused/axil-cpu-build
+bash validation/axil/generate.sh
+export AXIL_CPU_BUILD="$REAL_LSU_BUILD"
+export CPU_INPUT_ROOT=/your/legal/mini-inputs
+bash validation/axil/run_soc.sh
+```
+
+生成器复制固定 git 快照，只修改副本；沿用已审计 LSU 写响应补丁，另加有上下文计数保护的 CSR mtval 修补。禁止改原上游目录。记录生成日志/哈希；不能对换了版本的输入盲目删哈希检查。
+
+配置：五级候选、无 Cache/无预测、RV32IM+Zicsr、机器模式；SYNC 寄存器堆、乘除法、非法指令/访存/跳转异常、三种中断。`misa` I/M 位明确为 0x1100。不实现 S/U 模式、CLINT、PLIC 或权限隔离。
+
+## 离线地址图（不是最终 ABI）
+
+|范围/地址|行为|
+|---|---|
+|0x80000000—0x80003fff|16 KiB ROM，取指和数据读；越界取指报错|
+|0x80004000—0x80007fff|16 KiB RAM，按 WSTRB 写；未初始化内容不可依赖|
+|0x10000000 / 04|UART 数据 / 状态；写数据等待 TX 空闲|
+|0x10000010|低 8 位 GPIO；离线固件用作事件标记|
+|0x10000020|只读周期 tick|
+|0x10000030|软件中断 pending bit0|
+|0x10000034|timer compare；ticks >= compare 产生中断|
+|key 低有效|同步后作为外部中断；不是去抖按键测试|
+|其他数据地址|DECERR；实验 CPU 转为精确访问异常|
+
+综合 SoC 局部 CPU 取消输入仍固定 0；全局复位同时清桥/目标。新增专用真实CPU+新AXIL桥的局部取消集成测试，见下节；它不改变物理复位方案，也不把旧 write_bridge 的证据混入新接口。
+
+## 真实 CPU 的在途取消
+
+设置上面的 AXIL_CPU_BUILD 后执行 `bash validation/axil/run_cancel.sh`。不需要UART输入或PDS。84个读写/响应码/延迟/取消窗口，独立目标不会随CPU局部复位清空；Python从握手、真实退休和程序输出核对排空与重启。36个轨迹负向和6个实际RTL故障变体必须被指定原因拒绝。原始轨迹、固件反汇编、audit.json及输入哈希保存在脚本打印目录。
+
+详细范围及实际失败修复见 [CPU-AXIL-03证据](../../evidence/axil-cancel-20260927.md)。测试ROM在复位时切换到不同地址/数据的重启夹具；这不是板卡自动切换软件的功能。仅LW/SW，未覆盖子字取消、重复复位或所有周期；综合SoC仍未启用局部cancel。
+
+## 指令与机器模式覆盖清单
+
+`program.py` 的 Python 整数模型独立产生 199 个结果，RTL 不能自己给自己生成预期；固件写结果由 testbench 顺序检查。每次生成 coverage.json 和反汇编；同一固件启动两遍，期望突变必须在第 4 项失败。
+
+|组|已执行的定向范围|
+|---|---|
+|整数寄存器|ADD SUB SLL SLT SLTU XOR SRL SRA OR AND，各 6 对零/符号/极值等操作数|
+|立即数|ADDI SLTI SLTIU XORI ORI ANDI SLLI SRLI SRAI，各 6 项；移位 31|
+|地址/跳转|LUI AUIPC JAL JALR；BEQ BNE BLT BGE BLTU BGEU 各 3 对，含 taken/not-taken|
+|存储|LW LB LBU LH LHU；SW SB SH 合并；FENCE 后读、x0 写忽略|
+|M 扩展|MUL MULH MULHSU MULHU DIV DIVU REM REMU；含除零及 signed overflow|
+|CSR|CSRRW/CSRRS/CSRRC/CSRRWI/CSRRSI/CSRRCI、mscratch、mcycle 增长|
+|同步异常|cause 0/1/2/3/4/5/6/7/11，核对 mcause/mepc/mtval，设置恢复 PC 后 mret|
+|中断|software/timer/external 分别设置 pending；mie 和全局 MIE 屏蔽，再启用；检查 cause、mtval=0、trap 时 MIE/MPIE 和返回 MIE|
+
+不是 riscv-arch-test 认证或完整 ISA/特权符合性证明。NOT_RUN：所有寄存器/立即数穷举、嵌套中断、全部 CSR WARL/只读错误、计数器溢出、WFI/FENCE.I、真实外设协议、随机长跑、SDF、上板。FENCE 定向顺序测试不证明多主机内存模型；该单槽 SoC 也没有多主机。
+
+## 同时 pending 的中断优先级
+
+设置上述 AXIL_CPU_BUILD、CPU_INPUT_ROOT，执行 `bash validation/axil/run_irq.sh`。真实 CPU 和未修改的 SoC 运行生成固件；四种双/三源组合 × 是否先屏蔽最高来源 × 两种使能顺序，共16种。两档外部输入延迟各启动两次，总计144次中断处理、1840条记录。独立预期检查 MEI > MSI > MTI、只清当前来源、被屏蔽请求保留及 mret 恢复 MIE；14次轨迹突变和一次实际 RTL 优先级反转必须被指定原因拒绝。
+
+原始轨迹、固件/反汇编、audit.json 和哈希留在脚本打印的本地目录。详见 [证据与限制](../../evidence/axil-irq-priority-20260927.md)。这是仲裁前同时处于 pending，不是同一时钟沿产生三种请求；不覆盖嵌套或全部中断竞争。
+
+## CSR 只读保护与合法取值边界
+
+设置相同 AXIL_CPU_BUILD、CPU_INPUT_ROOT 后执行 `bash validation/axil/run_csr.sh`。195个定向用例各跑两次，记录3120条结果；检查器17项负向自测及三种实际RTL修复撤销检查均通过。新生成CPU哈希为 `d0e23f3c4de105dd2c547f41c4bc5f81dd89b3d7d6dba34db8b3062eea701a25`，旧生成目录不能直接复用，需在新目录重跑 generate.sh。详见 [修复证据](../../evidence/axil-csr-fix-20260927.md)；[旧失败快照](../../evidence/axil-csr-boundary-20260927.md)保持不变，可在提交af5912e复现。测试预期没有为修复放宽。范围包括只读ID/计数别名、未映射CSR、mscratch、固定misa、mie、mstatus、mepc及Direct-only mtvec；完整CSR边界仍未覆盖。
+
+## 访存异常与中断竞争
+
+设置相同 AXIL_CPU_BUILD 后执行 `bash validation/axil/run_competition.sh`。LW/SW × MSI/MTI/MEI × mie开启/屏蔽 × 3种IRQ到达窗口 × SLVERR/DECERR × 2档目标延迟，共144配置，每配置两次启动。独立CSR记录与握手/退休轨迹核对故障PC、异常先后、寄存器保留、pending及mret后服务；20项检查器负向和2个实际桥错误抑制变体均被拒绝。
+
+这是专用真实CPU+AXIL桥RTL夹具，不 force CPU内部状态，不经过原SoC外设IRQ来源。参见[证据与明确边界](../../evidence/axil-irq-exception-20260927.md)。
+
+## 其他同步异常与中断竞争
+
+设置 AXIL_CPU_BUILD 后执行 `bash validation/axil/run_sync_competition.sh`。ECALL、EBREAK、非法零编码、LW/SW未对齐、JALR未对齐及取指访问错误，分别与MSI/MTI/MEI、mie开启/屏蔽及三种到达窗口交叉，共126配置/252次启动。140项检查器负向与实际取指error抑制负向被拒绝，原访存竞争也已重跑通过。详见[CPU-AXIL-07证据](../../evidence/axil-sync-competition-20260927.md)。嵌套、全局MIE屏蔽交叉、在途复位和本固件网表验证仍NOT_RUN。
+
+## 两层处理与局部复位
+
+新增边界验证：设置相同AXIL_CPU_BUILD，运行 `bash validation/axil/run_nested.sh`。两层IRQ/ECALL处理与延后服务共36配置，5个CPU局部复位窗口共324配置；25项检查器负向、错误固件恢复与旧响应回送两种实际故障对照均被拒绝。复位目标保留、已接受写不回滚；132配置实际保留非零pending。详见[CPU-AXIL-08证据](../../evidence/axil-nested-reset-20260927.md)。使用保留寄存器保存两层现场，不是通用RTOS；综合SoC未接局部cancel，本固件网表/板级测试NOT_RUN。
+
+## PDS 和综合网表
+
+当前固定候选统一结果见[RC1记录](../../evidence/axil-candidate-rc1-20260927.md)，[板级准入清单](../../docs/board/CPU_RC1_BOARD_AUDIT.md)仍未全部满足。
+
+设置上文的AXIL_CPU_BUILD、CPU_INPUT_ROOT，运行 `bash validation/axil/run_candidate.sh` 可顺序重跑soc、bridge、irq、csr、cancel、competition、sync_competition、nested。脚本固定源提交 `1d86be3642daf0cca175e6c2066fc8b93406d0e6`，源变更必须另行审核新候选，不能删除门禁。WSL若不能解析Windows创建的工作树，可用CANDIDATE_GIT指向已安装的Windows git.exe；正常Linux工作树无需设置。TMPDIR可指向本地私有日志目录。
+
+统一入口只跑RTL；下列PDS和网表仍须分别执行。网表白名单只含审核过的文件：即使重建只改变生成注释，新的哈希也必须先比较差异。当前固件依赖测试台判分/IRQ激励，不能直接当作板级串口自检程序。
+
+`run_pds.ps1` 接收 PdsShell、AxilCpuBuild、CpuInputRoot、SocRun、ReferenceProject；复制隔离 ASCII 临时目录，保留输入哈希、原生 .pds 和报告。仅综合/dev_map/pnr/report_timing；不产 bitstream、不下载。ReferenceProject 仅提供 hash 固定的旧候选 FDC。
+
+```powershell
+./validation/axil/run_pds.ps1 -PdsShell <pds_shell.exe> -AxilCpuBuild <生成目录> -CpuInputRoot <合法输入> -SocRun <run_soc输出> -ReferenceProject <旧候选工程>
+```
+
+检查报告用 `python3 -B validation/lsu_soc/check_pds.py <PDS输出> --self-test`。网表功能回归设置 PDS_STAGE、PDS_SIM_LIB 后执行 `bash validation/axil/run_netlist.sh`。综合网表探针依赖已核验的特定网表，哈希变化先审计，不自动接受。新CPU PDS/网表结果见 [CSR修复回归](../../evidence/axil-csr-fix-20260927.md)，[此前离线验收](../../evidence/axil-pds-20260927.md)属于旧CPU，不能混用。
